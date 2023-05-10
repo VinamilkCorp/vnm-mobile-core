@@ -4,15 +4,17 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:vinamilk_b2b/global/navigator.dart';
-import 'package:vinamilk_b2b/util/dialog_util.dart';
-import 'package:vinamilk_b2b/util/jwt_util.dart';
-import 'package:vinamilk_b2b/vnm/core/exception/index.dart';
-import 'package:vinamilk_b2b/vnm/core/global/loader.dart';
-import 'package:vinamilk_b2b/vnm/core/global/route.dart';
-import 'package:vinamilk_b2b/vnm/core/model/auth_token.dart';
-import 'package:vinamilk_b2b/vnm/core/model/user.dart';
-import 'package:vinamilk_b2b/vnm/core/storage/storage.dart';
+
+import '../../material/widgets/alert.dart';
+import '../exception/index.dart';
+import '../model/auth_token.dart';
+import '../model/user.dart';
+import '../storage/storage.dart';
+import '../util/jwt.dart';
+import 'loader.dart';
+import 'localization.dart';
+import 'navigator.dart';
+import 'route.dart';
 
 class AuthNotifier extends ChangeNotifier {
   AuthTokenResponse? _token;
@@ -20,10 +22,10 @@ class AuthNotifier extends ChangeNotifier {
   bool get isUnauthenticated => _token == null;
 
   bool get isAuthenticated =>
-      !isUnauthenticated && !JwtUtil.isExpired(_token!.refreshToken);
+      !isUnauthenticated && !JwtUtil().isExpired(_token!.refreshToken);
 
   bool get isExpired =>
-      !isUnauthenticated && JwtUtil.isExpired(_token!.refreshToken);
+      !isUnauthenticated && JwtUtil().isExpired(_token!.refreshToken);
 
   void set(AuthTokenResponse? token) {
     _token = token;
@@ -83,14 +85,15 @@ class Auth {
 
   Future<void> _onListener() async {
     var route = getRoute();
-    if (route != null) VNMNavigator().pushRouteAndRemoveUntil(route);
+    VNMNavigator().pushRouteAndRemoveUntil(route);
     checkShowDenyByRole();
   }
 
   Future<void> checkShowDenyByRole() async {
     if (_auth!.isAuthenticated) {
       if (!user.hasStoreOwnerRole) {
-        await DialogUtil.showDenyByRole();
+        var locale = Localization().locale;
+        await Alert.close(message: locale.alert_not_store_owner).show();
         Loader().wrap(func: () async {
           await Storage().clearSession();
           if (externalLogout != null) await externalLogout!();
@@ -98,6 +101,13 @@ class Auth {
         });
       }
     }
+  }
+
+  Future<void> foreLogout() async {
+    await Alert.goOn(message: Localization().locale.force_logout_desc).show();
+    return Loader().wrap(func: () async {
+      await onReLogin();
+    });
   }
 
   AppRoute getRoute() {

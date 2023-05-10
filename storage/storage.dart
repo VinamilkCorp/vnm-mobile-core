@@ -15,6 +15,7 @@ class _StorageKey {
   static const String authUserDetails = "auth.userDetails";
   static const String token = "auth.token";
   static const String clientId = "clientId";
+  static const String deviceInfo = "deviceInfo";
   static const String campaignBanner = "campaign_banner";
   static const String hasCampaignBanner = "has_campaign";
   static const String hasDisplayRules = "FTWRulesDisplay";
@@ -31,7 +32,12 @@ class Storage {
 
   final _UserStorage _user = _UserStorage();
 
-  Future<void> initialize() async {
+  Future<void> initialize(
+      {String secureKey = '', String databaseName = ''}) async {
+    Encrypt().initialize(
+      secureKey: secureKey,
+      databaseName: databaseName,
+    );
     await _secure.init();
     await _user.init();
   }
@@ -54,6 +60,10 @@ class Storage {
 
   Future<void> setSignatureSalt(String value) =>
       _secure.setSignatureSalt(value);
+
+  Future<String?> getDeviceInfo() => _secure.getDeviceInfo();
+
+  Future<void> setDeviceInfo(String value) => _secure.setDeviceInfo(value);
 
   //user storage methods implement
   Future<bool?> getHasDisplayRules() => _user.getHasDisplayRules();
@@ -222,6 +232,14 @@ class _SecureStorage extends BaseStorage {
   Future<void> setSignatureSalt(String value) async {
     await setString(_StorageKey.signatureSalt, value);
   }
+
+  Future<String?> getDeviceInfo() async {
+    return getString(_StorageKey.deviceInfo);
+  }
+
+  Future<void> setDeviceInfo(String value) async {
+    await setString(_StorageKey.deviceInfo, value);
+  }
 }
 
 //User Storage: storage user values
@@ -284,7 +302,7 @@ class _UserStorage extends BaseStorage {
 
   Future<Map<String, dynamic>?> getObjectByRequest(
       String url, Map<String, dynamic>? parameters) async {
-    clearExpiredSink.sink.add(_box?.keys ?? []);
+    clearExpiredSink.add(_box?.keys ?? []);
     var key = _keyByRequest(url, parameters);
     VNMLogger().info("Get local: $key");
     String? data = await getString(key);

@@ -29,7 +29,7 @@ class Encrypt {
       .replaceAll("+", "")
       .replaceAll("/", "");
 
-  void config({String secureKey = '', String databaseName = ''}) {
+  void initialize({String secureKey = '', String databaseName = ''}) {
     if (databaseName.length >= this.databaseName.length)
       this.databaseName = databaseName;
     if (secureKey.length == this.secureKey.length) this.secureKey = secureKey;

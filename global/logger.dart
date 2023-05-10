@@ -3,10 +3,17 @@ import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
+import '../../core/env.dart';
+
 class VNMLogger {
+  String? name;
   static VNMLogger _i = VNMLogger._();
 
-  var _logger = Logger("VinamilkB2B");
+  Logger get _logger => Logger(name ?? Env().name);
+
+  void config({required String name}) {
+    this.name = name;
+  }
 
   VNMLogger._() {
     Logger.root.level = Level.ALL;

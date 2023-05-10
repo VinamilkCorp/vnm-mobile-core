@@ -3,8 +3,9 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../model/error_message.dart';
 import 'message_exception.dart';
-import 'package:vinamilk_b2b/models/config/error_message.dart';
 
 class RemoteErrorMessageException extends MessageException {
   final ErrorMessageConfig error;
@@ -21,8 +22,7 @@ class DioErrorException extends MessageException {
   DioErrorException(this.error);
 
   @override
-  String message(BuildContext context) =>
-      json.encode({
+  String message(BuildContext context) => json.encode({
         "status": error.response?.statusCode,
         "error": error.toString(),
         "message": message,
@@ -43,57 +43,41 @@ class DioErrorException extends MessageException {
 class RS01404Exception extends MessageException {
   @override
   String message(BuildContext context) =>
-      AppLocalizations
-          .of(context)
-          .phone_number_not_registered_as_vnm;
+      AppLocalizations.of(context).phone_number_not_registered_as_vnm;
 }
 
 class RS01521Exception extends MessageException {
   String message(BuildContext context) =>
-      AppLocalizations
-          .of(context)
-          .this_store_code_registered_by_another_phone;
+      AppLocalizations.of(context).this_store_code_registered_by_another_phone;
 }
 
 class AS01403Exception extends MessageException {
   String message(BuildContext context) =>
-      AppLocalizations
-          .of(context)
-          .exception_auth_phone_number_invalid;
+      AppLocalizations.of(context).exception_auth_phone_number_invalid;
 }
 
 class VS01403Exception extends MessageException {
   String message(BuildContext context) =>
-      AppLocalizations
-          .of(context)
-          .otp_exceeded_error;
+      AppLocalizations.of(context).otp_exceeded_error;
 }
 
 class VS02401Exception extends MessageException {
   String message(BuildContext context) =>
-      AppLocalizations
-          .of(context)
-          .otp_many_request_error;
+      AppLocalizations.of(context).otp_many_request_error;
 }
 
 class VS03401Exception extends MessageException {
   String message(BuildContext context) =>
-      AppLocalizations
-          .of(context)
-          .otp_not_valid_error;
+      AppLocalizations.of(context).otp_not_valid_error;
 }
 
 class AU05400Exception extends MessageException {
   String message(BuildContext context) =>
-      AppLocalizations
-          .of(context)
-          .pin_many_request_error;
+      AppLocalizations.of(context).pin_many_request_error;
 }
 
 class WrongPinException implements MessageException {
   @override
   String message(BuildContext context) =>
-      AppLocalizations
-          .of(context)
-          .wrong_pin_exception;
+      AppLocalizations.of(context).wrong_pin_exception;
 }

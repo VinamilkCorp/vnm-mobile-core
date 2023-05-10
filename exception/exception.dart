@@ -1,38 +1,53 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:vinamilk_b2b/vnm/core/global/logger.dart';
+
+import '../../material/widgets/alert.dart';
+import '../env.dart';
+import '../global/auth.dart';
+import '../global/localization.dart';
+import '../global/logger.dart';
+import '../global/navigator.dart';
+import 'app_exception.dart';
+import 'message_exception.dart';
 
 class VNMException {
-  Function(Object exception, StackTrace? stackTrace)? onShowDialog;
-  bool isProd = false;
-
   VNMException._();
 
   static final _instance = VNMException._();
 
   factory VNMException() => _instance;
 
-  void config(
-      {required bool isProd,
-      required Function(Object exception, StackTrace? stackTrace)
-          onShowDialog}) {
-    this.isProd = isProd;
-    this.onShowDialog = onShowDialog;
-  }
-
   void capture(exception, [stackTrace]) async {
     VNMLogger().error(exception, stackTrace);
-    if (isProd) {
+    if (Env().isProd) {
       Sentry.captureException(exception, stackTrace: stackTrace);
     }
-    if (onShowDialog != null) {
-      if (exception is Object && stackTrace is StackTrace?)
-        onShowDialog!(exception, stackTrace);
+    if (exception is Object && stackTrace is StackTrace?) {
+      if (exception is TokenExpiredException) {
+        await Auth().foreLogout();
+      } else if (exception is DioError) {
+        if (exception.error is SocketException) {
+          var locale = Localization().locale;
+          await Alert.close(message: locale.no_internet_connection).show();
+        }
+      } else if (exception is SocketException) {
+        var locale = Localization().locale;
+        await Alert.close(message: locale.no_internet_connection).show();
+      } else {
+        if (exception is MessageException) {
+          await Alert.close(message: exception.message(VNMNavigator().context))
+              .show();
+        }
+      }
     }
-    // DialogUtil.showExceptionDialog(exception, stackTrace);
   }
 
+  // DialogUtil.showExceptionDialog(exception, stackTrace);
+
   void captureMessage(String message, List<dynamic>? params) async {
-    if (isProd) {
+    if (Env().isProd) {
       Sentry.captureMessage(message, params: params);
     }
   }

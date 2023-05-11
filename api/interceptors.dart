@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:crypto/crypto.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
 
 import '../exception/index.dart';
@@ -16,13 +15,6 @@ class APIInterceptor implements Interceptor {
   final APIHeaderCreator? headers;
 
   APIInterceptor({this.headers});
-
-  Future<Map<String, dynamic>> getDeviceInfo() async {
-    final deviceInfo = await DeviceInfoPlugin().deviceInfo;
-    Map<String, dynamic> info = Map.from(deviceInfo.data);
-    info.remove("systemFeatures");
-    return info;
-  }
 
   @override
   Future<void> onRequest(

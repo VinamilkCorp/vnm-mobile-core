@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 
 import '../../material/widgets/alert.dart';
 import '../env.dart';
@@ -13,16 +12,26 @@ import 'app_exception.dart';
 import 'message_exception.dart';
 
 class VNMException {
+  static final _instance = VNMException._();
+  Function(dynamic exception, dynamic stackTrace)? onCaptureException;
+  Function(String message, List<dynamic>? params)? onCaptureMessage;
+
   VNMException._();
 
-  static final _instance = VNMException._();
-
   factory VNMException() => _instance;
+
+  void config(
+      {Function(dynamic exception, dynamic stackTrace)? onCaptureException,
+      Function(String message, List<dynamic>? params)? onCaptureMessage}) {
+    this.onCaptureException = onCaptureException;
+    this.onCaptureMessage = onCaptureMessage;
+  }
 
   void capture(exception, [stackTrace]) async {
     VNMLogger().error(exception, stackTrace);
     if (Env().isProd) {
-      Sentry.captureException(exception, stackTrace: stackTrace);
+      if (onCaptureException != null)
+        onCaptureException!(exception, stackTrace);
     }
     if (exception is Object && stackTrace is StackTrace?) {
       if (exception is TokenExpiredException) {
@@ -48,7 +57,7 @@ class VNMException {
 
   void captureMessage(String message, List<dynamic>? params) async {
     if (Env().isProd) {
-      Sentry.captureMessage(message, params: params);
+      if (onCaptureMessage != null) onCaptureMessage!(message, params);
     }
   }
 }

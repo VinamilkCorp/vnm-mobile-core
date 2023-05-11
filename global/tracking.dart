@@ -9,9 +9,9 @@ class VNMTrackingConfig {
 
   factory VNMTrackingConfig() => _i;
 
-  void initialize(
+  Future<void> initialize(
       {Function(String label)? logButton,
-      Function(AppRoute appRoute, Object? args)? logRoute}) {
+      Function(AppRoute appRoute, Object? args)? logRoute}) async {
     this.logButton = logButton;
     this.logRoute = logRoute;
   }

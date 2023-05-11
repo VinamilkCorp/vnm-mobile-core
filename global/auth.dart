@@ -1,9 +1,7 @@
 import 'dart:async';
 
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 
 import '../../material/widgets/alert.dart';
 import '../exception/index.dart';
@@ -48,13 +46,17 @@ class Auth {
   AuthNotifier? _auth;
 
   Future Function()? externalLogout;
+  Future Function(String id)? externalUserIdUpdate;
 
   Auth._();
 
   factory Auth() => _i;
 
-  void config({Future Function()? externalLogout}) {
+  void config(
+      {Future Function()? externalLogout,
+      Future Function(String id)? externalUserIdUpdate}) {
     this.externalLogout = externalLogout;
+    this.externalUserIdUpdate = externalUserIdUpdate;
   }
 
   User get user => _auth!._token?.user ?? User.empty();
@@ -78,12 +80,14 @@ class Auth {
     // token = token?.copyWith(
     //     user: token.user.copyWith(roles: ["ROLE_DISTRIBUTOR_DRIVER"]));
     _auth!.set(token);
+    _updateAnalyticUser();
     _auth!.addListener(_onListener);
     checkShowDenyByRole();
     _completer.complete(true);
   }
 
   Future<void> _onListener() async {
+    _updateAnalyticUser();
     var route = getRoute();
     VNMNavigator().pushRouteAndRemoveUntil(route);
     checkShowDenyByRole();
@@ -150,19 +154,16 @@ class Auth {
   void setToken(AuthTokenResponse? token) {
     _auth!.set(token);
     if (token != null) Storage().setToken(token);
-    _updateAnalyticUser();
   }
 
   void _updateAnalyticUser() {
     //set userId sentry
     try {
-      if (user.userCode.isEmpty) {
-        Sentry.configureScope((scope) => scope.clear());
-        FirebaseAnalytics.instance.setUserId(id: null);
-      } else {
-        var userId = user.userCode + "_" + user.phoneNo;
-        Sentry.configureScope((scope) => scope.setUser(SentryUser(id: userId)));
-        FirebaseAnalytics.instance.setUserId(id: userId);
+      if (externalUserIdUpdate != null) {
+        if (user.userCode.isEmpty)
+          externalUserIdUpdate!("");
+        else
+          externalUserIdUpdate!(user.userCode + "_" + user.phoneNo);
       }
     } catch (exception, stackTrace) {
       VNMException().capture(exception, stackTrace);

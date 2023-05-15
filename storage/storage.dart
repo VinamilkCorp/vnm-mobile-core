@@ -32,12 +32,8 @@ class Storage {
 
   final _UserStorage _user = _UserStorage();
 
-  Future<void> initialize(
-      {String secureKey = '', String databaseName = ''}) async {
-    Encrypt().initialize(
-      secureKey: secureKey,
-      databaseName: databaseName,
-    );
+  Future<void> initialize(String databaseName) async {
+    await Encrypt().initialize(databaseName);
     await _secure.init();
     await _user.init();
   }

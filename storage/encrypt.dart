@@ -1,8 +1,12 @@
+import 'dart:math';
+
 import 'package:encrypt/encrypt.dart';
+import 'package:flutter_keychain/flutter_keychain.dart';
+import 'package:vinamilk_b2b/vnm/core/global/logger.dart';
 
 class Encrypt {
   String databaseName = "default";
-  String secureKey = "ij6QwqYdfIDylxcljq15CuwA5mxwWfq4";
+  String secureKey = "";
 
   static Encrypt _i = Encrypt._();
 
@@ -29,10 +33,32 @@ class Encrypt {
       .replaceAll("+", "")
       .replaceAll("/", "");
 
-  void initialize({String secureKey = '', String databaseName = ''}) {
+  Future<void> initialize(String databaseName) async {
     if (databaseName.length >= this.databaseName.length)
       this.databaseName = databaseName;
-    if (secureKey.length == this.secureKey.length) this.secureKey = secureKey;
+    try {
+      String key = "${databaseName}_secure_Key";
+      secureKey = (await FlutterKeychain.get(key: key)) ?? "";
+      VNMLogger().info("Get my secure key: ${secureKey}");
+      if (secureKey.length < 32) {
+        secureKey = _generateRandomKeys();
+        VNMLogger().info("Generate new secure key: ${secureKey}");
+        await FlutterKeychain.put(key: key, value: secureKey);
+      }
+    } catch (exception, stackTrace) {
+      VNMLogger().error(exception, stackTrace);
+      secureKey = _generateRandomKeys();
+    }
+  }
+
+  String _generateRandomKeys() {
+    String characters =
+        "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm1234567890";
+    String key = '';
+    for (int i = 0; i < 32; i++) {
+      key += characters[Random().nextInt(characters.length)];
+    }
+    return key;
   }
 
   String encrypt(String text) {

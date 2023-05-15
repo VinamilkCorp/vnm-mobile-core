@@ -25,7 +25,6 @@ class VNMBinding {
 
   Future<void> initialized(
       {required String appName,
-      required String secureKey,
       required String databaseName,
       String? iOSAppId}) async {
     //log
@@ -45,10 +44,7 @@ class VNMBinding {
     Version().config(iOSAppId: iOSAppId);
 
     //storage
-    await Storage().initialize(
-      secureKey: secureKey,
-      databaseName: databaseName,
-    );
+    await Storage().initialize(databaseName);
 
     //firebase
     if (_onFirebaseInit != null) await _onFirebaseInit!();

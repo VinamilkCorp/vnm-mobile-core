@@ -5,7 +5,7 @@ import 'package:collection/collection.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:flutter/foundation.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:vinamilk_b2b/vnm/core/util/jwt.dart';
 
 import '../../extension/if_null.dart';
 import '../env.dart';
@@ -165,7 +165,7 @@ extension DioEx on Dio {
           VNMException().capture(skipForAuth[key], dioError!.stackTrace);
           return null;
         }
-        if (JwtDecoder.isExpired(Auth().refreshToken)) {
+        if (JwtUtil().isExpired(Auth().refreshToken)) {
           await Auth().foreLogout();
         } else {
           if (allowRefreshToken == true) {
@@ -180,7 +180,7 @@ extension DioEx on Dio {
             if (authToken == null) {
               await Auth().foreLogout();
             } else {
-              Auth().setToken(authToken);
+              Auth().updateToken(authToken);
               await Future.delayed(Duration(milliseconds: 500));
               return catcher(callback, false);
             }

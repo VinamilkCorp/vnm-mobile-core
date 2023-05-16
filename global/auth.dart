@@ -44,6 +44,7 @@ class Auth {
   static final Auth _i = Auth._();
   Completer<bool> _completer = Completer<bool>();
   AuthNotifier? _auth;
+  bool _forceLoginShown = false;
 
   Future Function()? externalLogout;
   Future Function(String id)? externalUserIdUpdate;
@@ -108,7 +109,10 @@ class Auth {
   }
 
   Future<void> foreLogout() async {
+    if (_forceLoginShown) return;
+    _forceLoginShown = true;
     await Alert.goOn(message: Localization().locale.force_logout_desc).show();
+    _forceLoginShown = false;
     return Loader().wrap(func: () async {
       await onReLogin();
     });
@@ -154,6 +158,15 @@ class Auth {
   void setToken(AuthTokenResponse? token) {
     _auth!.set(token);
     if (token != null) Storage().setToken(token);
+  }
+
+  void updateToken(AuthTokenResponse? token) {
+    _auth!._token = token;
+    if (token != null) Storage().setToken(token);
+  }
+
+  void removeRefreshToken() {
+    _auth!._token = null;
   }
 
   void _updateAnalyticUser() {

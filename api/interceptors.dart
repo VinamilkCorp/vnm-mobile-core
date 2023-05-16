@@ -30,14 +30,17 @@ class APIInterceptor implements Interceptor {
     // bool isExpired = false;
     // int count = await Storage().getInt("fake_refresh_token") ?? 8;
     // count--;
-    // log("DEBUG: fake refresh token ========> $count");
+    // VNMLogger().info("DEBUG: fake refresh token ========> $count");
     // if (count == 0) {
     //   await Storage().setInt("fake_refresh_token", 8);
     //   isExpired = true;
     // } else {
     //   await Storage().setInt("fake_refresh_token", count);
     // }
-    // if (isExpired) options.headers.remove("Authorization");
+    // if (isExpired) {
+    //   options.headers.remove("Authorization");
+    //   // Auth().removeRefreshToken();
+    // }
 
     //client-id
     //x-device-info

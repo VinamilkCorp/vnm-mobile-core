@@ -38,6 +38,24 @@ class Storage {
     await _user.init();
   }
 
+  String? getString(String key) {
+    return _user.getString(key);
+  }
+
+  Future<void> setString(String key, String value) async {
+    return _user.setString(key, value);
+  }
+
+  int? getInt(String key) {
+    var value = _user.get(key);
+    if (value is int) return value;
+    return null;
+  }
+
+  Future<void> setInt(String key, int value) async {
+    return _user.setInt(key, value);
+  }
+
   //secure storage methods implement
   Future<void> clearSession() async {
     _user.clear();
@@ -109,6 +127,10 @@ abstract class BaseStorage {
   }
 
   Future<void> setBool(String key, bool value) async {
+    await _box?.putSafe(key, value, encrypt: encryptEnable);
+  }
+
+  Future<void> setInt(String key, int value) async {
     await _box?.putSafe(key, value, encrypt: encryptEnable);
   }
 

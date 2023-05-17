@@ -85,15 +85,16 @@ class Storage {
   Future<void> setHasDisplayRules(bool value) =>
       _user.setHasDisplayRules(value);
 
-  Future<Map<String, dynamic>?> getObjectByRequest(
-          String url, Map<String, dynamic>? parameters) =>
+  Future<Map<String, dynamic>?> getObjectByRequest(String url,
+          [Map<String, dynamic>? parameters]) =>
       _user.getObjectByRequest(url, parameters);
 
-  Future setObjectByRequest(String url, Map<String, dynamic>? parameters,
-          Map<String, dynamic> data) =>
+  Future setObjectByRequest(String url, Map<String, dynamic> data,
+          [Map<String, dynamic>? parameters]) =>
       _user.setObjectByRequest(url, parameters, data);
 
-  Future removeObjectByRequest(String url, Map<String, dynamic>? parameters) =>
+  Future removeObjectByRequest(String url,
+          [Map<String, dynamic>? parameters]) =>
       _user.removeObjectByRequest(url, parameters);
 }
 

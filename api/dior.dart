@@ -100,7 +100,7 @@ class VNMDio {
       try {
         T data = parser(result?.data!);
         yield data;
-        Storage().setObjectByRequest(url, parameters, data.toJson());
+        Storage().setObjectByRequest(url, data.toJson(), parameters);
       } catch (exception, stackTrace) {
         VNMLogger().error(exception, stackTrace);
       }

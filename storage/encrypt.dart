@@ -38,17 +38,35 @@ class Encrypt {
       this.databaseName = databaseName;
     try {
       String key = "${databaseName}_secure_Key";
-      secureKey = (await FlutterKeychain.get(key: key)) ?? "";
+      secureKey = (await get(key)) ?? "";
       VNMLogger().info("Get my secure key: ${secureKey}");
       if (secureKey.length < 32) {
         secureKey = _generateRandomKeys();
         VNMLogger().info("Generate new secure key: ${secureKey}");
-        await FlutterKeychain.put(key: key, value: secureKey);
+        await put(key, secureKey);
       }
     } catch (exception, stackTrace) {
       VNMLogger().error(exception, stackTrace);
       secureKey = _generateRandomKeys();
     }
+  }
+
+  Future<void> put(String key, String value) async {
+    try {
+      await FlutterKeychain.put(key: key, value: encrypt(value));
+    } catch (exception, stackTrace) {}
+  }
+
+  Future<String?> get(String key) async {
+    try {
+      String? value = await FlutterKeychain.get(key: key);
+      if (value != null) return decrypt(value);
+    } catch (exception, stackTrace) {}
+    return null;
+  }
+
+  Future<void> remove(String key) {
+    return FlutterKeychain.remove(key: key);
   }
 
   String _generateRandomKeys() {
@@ -62,6 +80,7 @@ class Encrypt {
   }
 
   String encrypt(String text) {
+    if (SECURE_KEY.isEmpty) return text;
     final key = Key.fromUtf8(SECURE_KEY);
     final iv = IV.fromUtf8(SECURE_IV);
     final e = Encrypter(AES(key, mode: AESMode.cbc));
@@ -70,6 +89,7 @@ class Encrypt {
   }
 
   String decrypt(String text) {
+    if (SECURE_KEY.isEmpty) return text;
     final key = Key.fromUtf8(SECURE_KEY);
     final iv = IV.fromUtf8(SECURE_IV);
     final e = Encrypter(AES(key, mode: AESMode.cbc));

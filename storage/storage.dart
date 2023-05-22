@@ -12,7 +12,6 @@ import 'encrypt.dart';
 
 class _StorageKey {
   static const String signatureSalt = "signatureSalt";
-  static const String authUserDetails = "auth.userDetails";
   static const String token = "auth.token";
   static const String clientId = "clientId";
   static const String deviceInfo = "deviceInfo";
@@ -214,10 +213,12 @@ class _SecureStorage extends BaseStorage {
   String get databaseName => Encrypt().secureDatabaseName;
 
   Future<void> clearSession() async {
-    await delete([
+    // await delete([
+    //   _StorageKey.token
+    // ]);
+    await Encrypt().remove(
       _StorageKey.token,
-      _StorageKey.authUserDetails,
-    ]);
+    );
   }
 
   Future<String?> getClientId() async {
@@ -229,7 +230,8 @@ class _SecureStorage extends BaseStorage {
   }
 
   Future<AuthTokenResponse?> getToken() async {
-    var data = await getString(_StorageKey.token);
+    // var data = await getString(_StorageKey.token);
+    var data = await Encrypt().get(_StorageKey.token);
     try {
       if (data == null) return null;
       var jsonData = jsonDecode(data);
@@ -241,7 +243,8 @@ class _SecureStorage extends BaseStorage {
   }
 
   Future<void> setToken(AuthTokenResponse value) async {
-    await setString(_StorageKey.token, jsonEncode(value));
+    // await setString(_StorageKey.token, jsonEncode(value));
+    await Encrypt().put(_StorageKey.token, jsonEncode(value));
   }
 
   Future<String?> getSignatureSalt() async {

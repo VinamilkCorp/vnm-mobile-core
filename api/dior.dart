@@ -5,6 +5,7 @@ import 'package:collection/collection.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:flutter/foundation.dart';
+import 'package:vinamilk_b2b/vnm/core/exception/dio_exception.dart';
 import 'package:vinamilk_b2b/vnm/core/util/jwt.dart';
 
 import '../../extension/if_null.dart';
@@ -220,6 +221,8 @@ extension DioErrorEx on DioError {
         VNMException()
             .capture(RemoteErrorMessageException(errorMsg), stackTrace);
       }
+    } else if (status == HttpStatus.internalServerError) {
+      VNMException().capture(UnknownMessageException(), stackTrace);
     } else if (status == HttpStatus.unauthorized) {
       VNMException().capture(UnauthorizedException(), stackTrace);
     } else {

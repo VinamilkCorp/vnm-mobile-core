@@ -18,6 +18,7 @@ class _StorageKey {
   static const String campaignBanner = "campaign_banner";
   static const String hasCampaignBanner = "has_campaign";
   static const String hasDisplayRules = "FTWRulesDisplay";
+  static const String deviceId = "deviceId";
 }
 
 class Storage {
@@ -64,6 +65,10 @@ class Storage {
   Future<String?> getClientId() => _secure.getClientId();
 
   Future<void> setClientId(String value) => _secure.setClientId(value);
+
+  Future<String?> getDeviceId() => _secure.getDeviceId();
+
+  Future<void> setDeviceId(String value) => _secure.setDeviceId(value);
 
   Future<AuthTokenResponse?> getToken() => _secure.getToken();
 
@@ -227,6 +232,14 @@ class _SecureStorage extends BaseStorage {
 
   Future<void> setClientId(String value) async {
     await setString(_StorageKey.clientId, value);
+  }
+
+  Future<String?> getDeviceId() async {
+    return Encrypt().get(_StorageKey.deviceId);
+  }
+
+  Future<void> setDeviceId(String value) async {
+    await Encrypt().put(_StorageKey.deviceId, value);
   }
 
   Future<AuthTokenResponse?> getToken() async {

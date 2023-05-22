@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:vinamilk_b2b/firebase/firebase.dart';
 
 import '../../material/widgets/alert.dart';
 import '../exception/index.dart';
@@ -121,6 +122,10 @@ class Auth {
   AppRoute getRoute() {
     if (_auth!.isAuthenticated) {
       if (user.hasStoreOwnerRole) {
+        VNMFirebase().analytic.logLogin(
+            phoneNo: user.phoneNo,
+            customerCode: user.userCode,
+            storeCode: user.b2bCode);
         return AppRoute.Home;
       } else {
         return AppRoute.Login;

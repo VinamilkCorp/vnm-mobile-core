@@ -68,6 +68,7 @@ class Encrypt {
       if (value != null) value = decrypt ? this.decrypt(value) : value;
     } catch (exception, stackTrace) {
       VNMException().capture(exception, stackTrace);
+      value = null;
     }
     return value;
   }

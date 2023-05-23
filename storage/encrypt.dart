@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter_keychain/flutter_keychain.dart';
+import 'package:vinamilk_b2b/vnm/core/exception/exception.dart';
 import 'package:vinamilk_b2b/vnm/core/global/logger.dart';
 
 class Encrypt {
@@ -37,13 +38,13 @@ class Encrypt {
     if (databaseName.length >= this.databaseName.length)
       this.databaseName = databaseName;
     try {
-      String key = "${databaseName}_secure_Key";
-      secureKey = (await get(key)) ?? "";
+      String key = "${this.databaseName}_secure_key";
+      secureKey = (await get(key, false)) ?? "";
       VNMLogger().info("Get my secure key: ${secureKey}");
-      if (secureKey.length < 32) {
+      if (secureKey.length != 32) {
         secureKey = _generateRandomKeys();
         VNMLogger().info("Generate new secure key: ${secureKey}");
-        await put(key, secureKey);
+        await put(key, secureKey, false);
       }
     } catch (exception, stackTrace) {
       VNMLogger().error(exception, stackTrace);
@@ -51,18 +52,24 @@ class Encrypt {
     }
   }
 
-  Future<void> put(String key, String value) async {
+  Future<void> put(String key, String value, [bool encrypt = true]) async {
     try {
-      await FlutterKeychain.put(key: key, value: encrypt(value));
-    } catch (exception, stackTrace) {}
+      await FlutterKeychain.put(
+          key: key, value: encrypt ? this.encrypt(value) : value);
+    } catch (exception, stackTrace) {
+      VNMException().capture(exception, stackTrace);
+    }
   }
 
-  Future<String?> get(String key) async {
+  Future<String?> get(String key, [bool decrypt = true]) async {
+    String? value;
     try {
-      String? value = await FlutterKeychain.get(key: key);
-      if (value != null) return decrypt(value);
-    } catch (exception, stackTrace) {}
-    return null;
+      value = await FlutterKeychain.get(key: key);
+      if (value != null) value = decrypt ? this.decrypt(value) : value;
+    } catch (exception, stackTrace) {
+      VNMException().capture(exception, stackTrace);
+    }
+    return value;
   }
 
   Future<void> remove(String key) {

@@ -72,18 +72,13 @@ class Device {
 
   Future<String> getDeviceId() async {
     try {
-      final deviceInfoPlugin = DeviceInfoPlugin();
-      if (Platform.isAndroid) {
-        return (await deviceInfoPlugin.androidInfo).id;
+      var deviceId = await Storage().getDeviceId();
+      if (deviceId == null) {
+        deviceId = Uuid().v4();
+        await Storage().setDeviceId(deviceId);
+        return deviceId;
       } else {
-        var deviceId = await Storage().getDeviceId();
-        if (deviceId == null) {
-          deviceId = Uuid().v4();
-          await Storage().setDeviceId(deviceId);
-          return deviceId;
-        } else {
-          return deviceId;
-        }
+        return deviceId;
       }
     } catch (exception, stackTrace) {
       VNMException().capture(exception, stackTrace);

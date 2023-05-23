@@ -194,7 +194,9 @@ extension _BoxEx on Box {
           var v = encrypt ? Encrypt().encrypt(value) : value;
           return put(k, v);
         } else if (value is Map) {
-          var v = encrypt ? Encrypt().encrypt(jsonEncode(value)) : value;
+          var v = encrypt
+              ? Encrypt().encrypt(jsonEncode(value))
+              : jsonEncode(value);
           return put(k, v);
         } else {
           return put(k, value);

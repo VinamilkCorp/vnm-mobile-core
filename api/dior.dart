@@ -222,7 +222,8 @@ extension DioErrorEx on DioError {
             .capture(RemoteErrorMessageException(errorMsg), stackTrace);
       }
     } else if (status == HttpStatus.internalServerError) {
-      VNMException().capture(UnknownMessageException(), stackTrace);
+      VNMException().capture(
+          UnknownMessageException(detail: response?.statusMessage), stackTrace);
     } else if (status == HttpStatus.unauthorized) {
       VNMException().capture(UnauthorizedException(), stackTrace);
     } else {

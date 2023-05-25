@@ -46,6 +46,10 @@ class ConnectionErrorException extends MessageException {
 }
 
 class UnknownMessageException extends MessageException {
+  final String? detail;
+
+  UnknownMessageException({this.detail});
+
   @override
   String message(BuildContext context) =>
       AppLocalizations.of(context).unknown_message;

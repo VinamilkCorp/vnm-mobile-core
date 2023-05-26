@@ -22,6 +22,8 @@ enum AppRoute {
   FortuneWheel,
   History,
   FortunePolicy,
+  Promotions,
+  PromotionFilter,
 }
 
 extension AppRouteSettings on RouteSettings {

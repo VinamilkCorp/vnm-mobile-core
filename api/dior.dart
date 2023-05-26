@@ -148,6 +148,12 @@ extension DioEx on Dio {
     try {
       response = await callback().onError((error, stackTrace) {
         if (error is DioError) {
+          VNMLogger().error({
+            "path": error.requestOptions.path,
+            "queryParameters": error.requestOptions.queryParameters,
+            "data": error.requestOptions.data,
+            "message": error.message,
+          });
           dioError = error;
           return error.response;
         }

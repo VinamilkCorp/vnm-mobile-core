@@ -57,12 +57,12 @@ class APIInterceptor implements Interceptor {
       requestPath =
           "/${options.uri.toString().split("//").sublist(1).join("//").split("/").sublist(1).join("/")}";
     } catch (exception, stackTrace) {
-      VNMException().capture(RequestPathException(), stackTrace);
+      throw exception;
+    } finally {
+      options.headers['x-signature'] = await createApiSignature(requestPath,
+          timestamp, options.headers["x-device-info"], options.data ?? "");
+      handler.next(options);
     }
-
-    options.headers['x-signature'] = await createApiSignature(requestPath,
-        timestamp, options.headers["x-device-info"], options.data ?? "");
-    handler.next(options);
   }
 
   @override
@@ -71,8 +71,7 @@ class APIInterceptor implements Interceptor {
     try {
       var statusCode = response.statusCode;
       if (statusCode != null) {
-        if (statusCode >= HttpStatus.badRequest &&
-            statusCode >= HttpStatus.unauthorized) {
+        if (statusCode >= HttpStatus.badRequest) {
           String? path = response.requestOptions.path;
           var params = {
             "path": path,

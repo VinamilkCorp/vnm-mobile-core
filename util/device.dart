@@ -5,7 +5,6 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
 
-import '../exception/exception.dart';
 import '../global/logger.dart';
 import '../storage/storage.dart';
 
@@ -26,6 +25,7 @@ class Device {
   final PublishSubject<num> _deviceInfoSink = PublishSubject<num>();
 
   Future<String> getInfo() async {
+    String value = "";
     try {
       var jsonData = {};
       if (Platform.isAndroid) {
@@ -50,13 +50,13 @@ class Device {
         };
       }
       var res = jsonEncode(jsonData);
-      var deviceInfo = res.replaceAll(new RegExp('[^\x00-\x7F]'), '_');
-      Storage().setDeviceInfo(deviceInfo);
-      return deviceInfo;
+      value = res.replaceAll(new RegExp('[^\x00-\x7F]'), '_');
+      Storage().setDeviceInfo(value);
     } catch (exception, stackTrace) {
-      VNMException().capture(exception, stackTrace);
+      throw exception;
+    } finally {
+      return value;
     }
-    return "";
   }
 
   void fetchInfo() {
@@ -71,18 +71,20 @@ class Device {
   }
 
   Future<String> getDeviceId() async {
+    String value = "";
     try {
       var deviceId = await Storage().getDeviceId();
       if (deviceId == null) {
         deviceId = Uuid().v4();
         await Storage().setDeviceId(deviceId);
-        return deviceId;
+        value = deviceId;
       } else {
-        return deviceId;
+        value = deviceId;
       }
     } catch (exception, stackTrace) {
-      VNMException().capture(exception, stackTrace);
+      throw exception;
+    } finally {
+      return value;
     }
-    return '';
   }
 }

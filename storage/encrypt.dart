@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter_keychain/flutter_keychain.dart';
-import 'package:vinamilk_b2b/vnm/core/exception/exception.dart';
 import 'package:vinamilk_b2b/vnm/core/global/logger.dart';
 
 class Encrypt {
@@ -57,7 +56,7 @@ class Encrypt {
       await FlutterKeychain.put(
           key: key, value: encrypt ? this.encrypt(value) : value);
     } catch (exception, stackTrace) {
-      VNMException().capture(exception, stackTrace);
+      throw exception;
     }
   }
 
@@ -67,10 +66,11 @@ class Encrypt {
       value = await FlutterKeychain.get(key: key);
       if (value != null) value = decrypt ? this.decrypt(value) : value;
     } catch (exception, stackTrace) {
-      VNMException().capture(exception, stackTrace);
       value = null;
+      throw exception;
+    } finally {
+      return value;
     }
-    return value;
   }
 
   Future<void> remove(String key) {

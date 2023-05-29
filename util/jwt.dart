@@ -1,7 +1,5 @@
 import 'package:jwt_decoder/jwt_decoder.dart';
 
-import '../exception/index.dart';
-
 class JwtUtil {
   static JwtUtil _i = JwtUtil._();
 
@@ -10,12 +8,13 @@ class JwtUtil {
   factory JwtUtil() => _i;
 
   bool isExpired(String refreshToken) {
+    bool value = true;
     try {
-      return JwtDecoder.isExpired(refreshToken);
+      value = JwtDecoder.isExpired(refreshToken);
     } catch (exception, stackTrace) {
-      VNMException().capture(exception, stackTrace);
+      throw exception;
+    } finally {
+      return value;
     }
-    ;
-    return true;
   }
 }

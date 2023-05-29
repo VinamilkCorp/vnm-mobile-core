@@ -1,5 +1,4 @@
 import 'dio_exception.dart';
-import 'exception.dart';
 import 'message_exception.dart';
 import 'server_exceptions.dart';
 
@@ -39,11 +38,13 @@ extension ExceptionCodeExtension on ExceptionCode {
 
 extension ExceptionCodeListEx on Iterable<ExceptionCode> {
   ExceptionCode byNameIfNull(String name, ExceptionCode defaultValue) {
+    ExceptionCode value = defaultValue;
     try {
-      return byName(name);
+      value = byName(name);
     } catch (exception, stackTrace) {
-      VNMException().capture(exception, stackTrace);
+      throw exception;
+    } finally {
+      return value;
     }
-    return defaultValue;
   }
 }

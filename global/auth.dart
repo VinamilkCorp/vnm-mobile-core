@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:vinamilk_b2b/firebase/firebase.dart';
 
 import '../../material/widgets/alert.dart';
-import '../exception/index.dart';
 import '../model/auth_token.dart';
 import '../model/user.dart';
 import '../storage/storage.dart';
@@ -184,7 +183,7 @@ class Auth {
           externalUserIdUpdate!(user.userCode + "_" + user.phoneNo);
       }
     } catch (exception, stackTrace) {
-      VNMException().capture(exception, stackTrace);
+      throw exception;
     }
   }
 }

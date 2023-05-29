@@ -5,7 +5,6 @@ import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../exception/index.dart';
 import '../global/logger.dart';
 import '../model/auth_token.dart';
 import 'encrypt.dart';
@@ -247,14 +246,16 @@ class _SecureStorage extends BaseStorage {
   Future<AuthTokenResponse?> getToken() async {
     // var data = await getString(_StorageKey.token);
     var data = await Encrypt().get(_StorageKey.token);
+    AuthTokenResponse? value;
     try {
       if (data == null) return null;
       var jsonData = jsonDecode(data);
-      return AuthTokenResponse.fromJson(jsonData);
+      value = AuthTokenResponse.fromJson(jsonData);
     } catch (exception, stackTrace) {
-      VNMException().capture(exception, stackTrace);
+      throw exception;
+    } finally {
+      return value;
     }
-    return null;
   }
 
   Future<void> setToken(AuthTokenResponse value) async {

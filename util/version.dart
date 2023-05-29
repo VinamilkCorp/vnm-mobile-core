@@ -2,7 +2,6 @@ import 'package:open_store/open_store.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../material/widgets/alert.dart';
-import '../exception/index.dart';
 import '../global/localization.dart';
 
 class Version {
@@ -37,7 +36,7 @@ class Version {
                 androidAppBundleId: packageInfo.packageName)).show();
       }
     } catch (exception, stackTrace) {
-      VNMException().capture(exception, stackTrace);
+      throw exception;
     }
   }
 

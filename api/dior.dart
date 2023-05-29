@@ -169,8 +169,7 @@ extension DioEx on Dio {
         String? key =
             skipForAuth.keys.firstWhereOrNull((k) => path.endsWith(k));
         if (key != null) {
-          VNMException().capture(skipForAuth[key], dioError!.stackTrace);
-          return null;
+          throw skipForAuth[key]!;
         }
         if (JwtUtil().isExpired(Auth().refreshToken)) {
           await Auth().foreLogout();
@@ -192,8 +191,7 @@ extension DioEx on Dio {
               return catcher(callback, false);
             }
           } else {
-            VNMException()
-                .capture(UnauthorizedException(), dioError!.stackTrace);
+            throw UnauthorizedException();
           }
         }
       } else {
@@ -208,7 +206,7 @@ extension DioEx on Dio {
 
 extension DioErrorEx on DioError {
   Future fail() async {
-    if (response == null) VNMException().capture(this, stackTrace);
+    if (response == null) throw this;
     var status = response?.statusCode ?? -1;
     if (status == HttpStatus.badRequest) {
       var errorDetails = response?.data is String
@@ -222,18 +220,16 @@ extension DioErrorEx on DioError {
       if (errorMsg == null) {
         var code = ExceptionCode.values
             .byNameIfNull(errorDetails['code'] ?? "", ExceptionCode.EMPTY);
-        VNMException().capture(code.exception, stackTrace);
+        throw code.exception;
       } else {
-        VNMException()
-            .capture(RemoteErrorMessageException(errorMsg), stackTrace);
+        throw RemoteErrorMessageException(errorMsg);
       }
     } else if (status == HttpStatus.internalServerError) {
-      VNMException().capture(
-          UnknownMessageException(detail: response?.statusMessage), stackTrace);
+      throw UnknownMessageException(detail: response?.statusMessage);
     } else if (status == HttpStatus.unauthorized) {
-      VNMException().capture(UnauthorizedException(), stackTrace);
+      throw UnauthorizedException();
     } else {
-      VNMException().capture(this, stackTrace);
+      throw this;
     }
   }
 }
@@ -243,7 +239,7 @@ extension ResponseEx on Response {
     try {
       return mapping(this.data);
     } catch (exception, stackTrace) {
-      VNMException().capture(JsonParseException(), stackTrace);
+      throw exception;
     }
   }
 }

@@ -68,6 +68,8 @@ class Auth {
 
   bool get unauthenticated => _auth!.isUnauthenticated;
 
+  AuthTokenResponse? get token => _auth!._token;
+
   String get accessToken => _auth!._token?.accessToken ?? "";
 
   String get refreshToken => _auth!._token?.refreshToken ?? "";

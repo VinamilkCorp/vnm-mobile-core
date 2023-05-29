@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
+import 'package:vinamilk_b2b/vnm/core/exception/exception.dart';
 
 import '../global/logger.dart';
 import '../storage/storage.dart';
@@ -53,7 +54,7 @@ class Device {
       value = res.replaceAll(new RegExp('[^\x00-\x7F]'), '_');
       Storage().setDeviceInfo(value);
     } catch (exception, stackTrace) {
-      throw exception;
+      VNMException().capture(exception, stackTrace);
     } finally {
       return value;
     }
@@ -82,7 +83,7 @@ class Device {
         value = deviceId;
       }
     } catch (exception, stackTrace) {
-      throw exception;
+      VNMException().capture(exception, stackTrace);
     } finally {
       return value;
     }

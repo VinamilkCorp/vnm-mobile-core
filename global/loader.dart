@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
+import 'package:vinamilk_b2b/vnm/core/exception/exception.dart';
 
 class LoadingNotifier extends ChangeNotifier {
   bool _loading = false;
@@ -46,7 +47,7 @@ class Loader {
       return result;
     } catch (exception, stackTrace) {
       hide();
-      throw exception;
+      VNMException().capture(exception, stackTrace);
     } finally {
       hide();
     }

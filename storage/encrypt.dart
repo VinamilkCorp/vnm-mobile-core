@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter_keychain/flutter_keychain.dart';
+import 'package:vinamilk_b2b/vnm/core/exception/exception.dart';
 import 'package:vinamilk_b2b/vnm/core/global/logger.dart';
 
 class Encrypt {
@@ -67,7 +68,7 @@ class Encrypt {
       if (value != null) value = decrypt ? this.decrypt(value) : value;
     } catch (exception, stackTrace) {
       value = null;
-      throw exception;
+      VNMException().capture(exception, stackTrace);
     } finally {
       return value;
     }

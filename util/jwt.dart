@@ -1,4 +1,5 @@
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:vinamilk_b2b/vnm/core/exception/exception.dart';
 
 class JwtUtil {
   static JwtUtil _i = JwtUtil._();
@@ -12,7 +13,7 @@ class JwtUtil {
     try {
       value = JwtDecoder.isExpired(refreshToken);
     } catch (exception, stackTrace) {
-      throw exception;
+      VNMException().capture(exception, stackTrace);
     } finally {
       return value;
     }

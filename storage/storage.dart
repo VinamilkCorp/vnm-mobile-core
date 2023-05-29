@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:vinamilk_b2b/vnm/core/exception/exception.dart';
 
 import '../global/logger.dart';
 import '../model/auth_token.dart';
@@ -252,7 +253,7 @@ class _SecureStorage extends BaseStorage {
       var jsonData = jsonDecode(data);
       value = AuthTokenResponse.fromJson(jsonData);
     } catch (exception, stackTrace) {
-      throw exception;
+      VNMException().capture(exception, stackTrace);
     } finally {
       return value;
     }

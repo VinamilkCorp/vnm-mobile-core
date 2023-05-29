@@ -57,7 +57,7 @@ class APIInterceptor implements Interceptor {
       requestPath =
           "/${options.uri.toString().split("//").sublist(1).join("//").split("/").sublist(1).join("/")}";
     } catch (exception, stackTrace) {
-      throw exception;
+      VNMException().capture(exception, stackTrace);
     } finally {
       options.headers['x-signature'] = await createApiSignature(requestPath,
           timestamp, options.headers["x-device-info"], options.data ?? "");

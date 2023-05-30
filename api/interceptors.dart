@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
@@ -68,30 +67,6 @@ class APIInterceptor implements Interceptor {
   @override
   Future<void> onResponse(
       Response response, ResponseInterceptorHandler handler) async {
-    try {
-      var statusCode = response.statusCode;
-      if (statusCode != null) {
-        if (statusCode >= HttpStatus.badRequest) {
-          String? path = response.requestOptions.path;
-          var params = {
-            "path": path,
-            "baseUrl": response.requestOptions.baseUrl,
-            "url": response.requestOptions.uri.toString(),
-            "method": response.requestOptions.method,
-            "header": response.requestOptions.headers,
-            "queryParameters": response.requestOptions.queryParameters,
-            "statusCode": statusCode,
-          };
-          if (response.requestOptions.data is Map ||
-              response.requestOptions.data is String) {
-            params["data"] = response.requestOptions.data;
-          }
-          VNMException().captureMessage("[${statusCode}] $path", [params]);
-        }
-      }
-    } catch (error, stackTrace) {
-      VNMLogger().error(error, stackTrace);
-    }
     handler.next(response);
   }
 

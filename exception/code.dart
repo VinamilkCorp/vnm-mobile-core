@@ -1,11 +1,9 @@
 import 'package:vinamilk_b2b/vnm/core/exception/exception.dart';
 
-import 'dio_exception.dart';
 import 'message_exception.dart';
 import 'server_exceptions.dart';
 
 enum ExceptionCode {
-  EMPTY,
   RS01404,
   RS01521,
   AS01403,
@@ -18,8 +16,6 @@ enum ExceptionCode {
 extension ExceptionCodeExtension on ExceptionCode {
   MessageException get exception {
     switch (this) {
-      case ExceptionCode.EMPTY:
-        return UnknownMessageException();
       case ExceptionCode.RS01404:
         return RS01404Exception();
       case ExceptionCode.RS01521:

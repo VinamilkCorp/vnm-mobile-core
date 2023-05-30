@@ -219,8 +219,14 @@ extension DioErrorEx on DioError {
       var errorMsg = errors.firstWhereOrNull((it) => it.code == errorCode);
       if (errorMsg == null) {
         var code = ExceptionCode.values
-            .byNameIfNull(errorDetails['code'] ?? "", ExceptionCode.EMPTY);
-        throw code.exception;
+            .firstWhereOrNull((it) => it.name == errorDetails['code']);
+        throw code?.exception ??
+            UnknownMessageException(
+                detail: jsonEncode({
+              "status": status,
+              "message": response?.statusMessage,
+              "code": errorDetails['code']
+            }));
       } else {
         throw RemoteErrorMessageException(errorMsg);
       }

@@ -28,12 +28,14 @@ class Version {
         var locale = Localization().locale;
         String title = locale.upgrade_application;
         String content = locale.upgrade_application_desc;
-        return Alert.agreeOrClose(
-            title: title,
-            message: content,
-            onAgree: () => OpenStore.instance.open(
-                appStoreId: iOSAppId,
-                androidAppBundleId: packageInfo.packageName)).show();
+        Future.delayed(Duration(seconds: 2)).then((value) {
+          Alert.agreeOrClose(
+              title: title,
+              message: content,
+              onAgree: () => OpenStore.instance.open(
+                  appStoreId: iOSAppId,
+                  androidAppBundleId: packageInfo.packageName)).show();
+        });
       }
     } catch (exception, stackTrace) {
       throw exception;

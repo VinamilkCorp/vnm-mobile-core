@@ -49,6 +49,21 @@ class BoolNotifier extends ChangeNotifier {
   }
 }
 
+class StringNotifier extends ChangeNotifier {
+  String? _value;
+
+  String? get value => _value;
+
+  set value(String? value) => _value = value;
+
+  void setValue(String? value) {
+    if (_value != value) {
+      _value = value;
+      notifyListeners();
+    }
+  }
+}
+
 class ObjectNotifier<T> extends ChangeNotifier {
   T? _value;
 

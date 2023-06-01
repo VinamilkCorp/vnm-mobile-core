@@ -24,6 +24,7 @@ enum AppRoute {
   FortunePolicy,
   Promotions,
   PromotionFilter,
+  PromotionProduct,
 }
 
 extension AppRouteSettings on RouteSettings {

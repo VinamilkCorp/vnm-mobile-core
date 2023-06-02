@@ -1,5 +1,6 @@
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:vinamilk_b2b/vnm/core/exception/exception.dart';
+
+import '../exception/exception.dart';
 
 class JwtUtil {
   static JwtUtil _i = JwtUtil._();

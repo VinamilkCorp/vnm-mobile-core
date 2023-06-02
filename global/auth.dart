@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:vinamilk_b2b/firebase/firebase.dart';
 
 import '../../material/widgets/alert.dart';
 import '../model/auth_token.dart';
@@ -47,17 +46,39 @@ class Auth {
   bool _forceLoginShown = false;
 
   Future Function()? externalLogout;
+
   Future Function(String id)? externalUserIdUpdate;
+
+  Future Function(
+      {required String phoneNo,
+      required String customerCode,
+      required String storeCode})? externalLoginTracking;
+  VNMAppRoute? homeRoute;
+  VNMAppRoute? loginRoute;
+  VNMAppRoute? welcomeBackRoute;
 
   Auth._();
 
   factory Auth() => _i;
 
-  void config(
-      {Future Function()? externalLogout,
-      Future Function(String id)? externalUserIdUpdate}) {
+  void config({
+    Future Function()? externalLogout,
+    Future Function(String id)? externalUserIdUpdate,
+    Future Function(
+            {required String phoneNo,
+            required String customerCode,
+            required String storeCode})?
+        externalLoginTracking,
+    required VNMAppRoute homeRoute,
+    required VNMAppRoute loginRoute,
+    required VNMAppRoute welcomeBackRoute,
+  }) {
     this.externalLogout = externalLogout;
     this.externalUserIdUpdate = externalUserIdUpdate;
+    this.externalLoginTracking = externalLoginTracking;
+    this.homeRoute = homeRoute;
+    this.loginRoute = loginRoute;
+    this.welcomeBackRoute = welcomeBackRoute;
   }
 
   User get user => _auth!._token?.user ?? User.empty();
@@ -120,24 +141,25 @@ class Auth {
     });
   }
 
-  AppRoute getRoute() {
+  VNMAppRoute getRoute() {
     if (_auth!.isAuthenticated) {
       if (user.hasStoreOwnerRole) {
-        VNMFirebase().analytic.logLogin(
-            phoneNo: user.phoneNo,
-            customerCode: user.userCode,
-            storeCode: user.b2bCode);
-        return AppRoute.Home;
+        if (externalLoginTracking != null)
+          externalLoginTracking!(
+              phoneNo: user.phoneNo,
+              customerCode: user.userCode,
+              storeCode: user.b2bCode);
+        return homeRoute!;
       } else {
-        return AppRoute.Login;
+        return loginRoute!;
       }
     } else if (_auth!.isUnauthenticated) {
-      return AppRoute.Login;
+      return loginRoute!;
     } else {
       if (user.phoneNo.isEmpty) {
-        return AppRoute.Login;
+        return loginRoute!;
       } else {
-        return AppRoute.WelcomeBack;
+        return welcomeBackRoute!;
       }
     }
   }

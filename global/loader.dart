@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
-import 'package:vinamilk_b2b/vnm/core/exception/exception.dart';
+
+import '../exception/exception.dart';
 
 class LoadingNotifier extends ChangeNotifier {
   bool _loading = false;

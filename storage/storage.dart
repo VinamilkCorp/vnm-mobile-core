@@ -4,8 +4,8 @@ import 'dart:convert';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:vinamilk_b2b/vnm/core/exception/exception.dart';
 
+import '../exception/exception.dart';
 import '../global/logger.dart';
 import '../model/auth_token.dart';
 import 'encrypt.dart';

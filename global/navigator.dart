@@ -19,29 +19,33 @@ class VNMNavigator {
 
   factory VNMNavigator() => _i;
 
-  Future pushRouteAndRemoveUntil(AppRoute appRoute,
+  Map _generateArguments(VNMAppRoute appRoute, Object? originalArgs) =>
+      {"builder": appRoute.builder, "args": originalArgs};
+
+  Future pushRouteAndRemoveUntil(VNMAppRoute appRoute,
       {Object? args, RoutePredicate? predicate}) async {
     return Navigator.of(context).pushNamedAndRemoveUntil(
-        appRoute.name, predicate ?? (route) => false,
-        arguments: args);
+        appRoute.code, predicate ?? (route) => false,
+        arguments: _generateArguments(appRoute, args));
   }
 
-  Future pushRoute(AppRoute appRoute, {Object? args}) async {
-    return Navigator.of(context).pushNamed(appRoute.name, arguments: args);
+  Future pushRoute(VNMAppRoute appRoute, {Object? args}) async {
+    return Navigator.of(context).pushNamed(appRoute.code,
+        arguments: _generateArguments(appRoute, args));
   }
 
   Future pushRouteReplacement(
-    AppRoute appRoute, {
+    VNMAppRoute appRoute, {
     Object? result,
     Object? args,
   }) async {
-    return Navigator.of(context)
-        .pushReplacementNamed(appRoute.name, arguments: args, result: result);
+    return Navigator.of(context).pushReplacementNamed(appRoute.code,
+        arguments: _generateArguments(appRoute, args), result: result);
   }
 
-  Future<void> popUntilRoute(AppRoute appRoute) async {
+  Future<void> popUntilRoute(VNMAppRoute appRoute) async {
     return Navigator.of(context)
-        .popUntil((route) => route.settings.name == appRoute.name);
+        .popUntil((route) => route.settings.name == appRoute.code);
   }
 
   Future<void> pop<T extends Object?>([T? result]) async {

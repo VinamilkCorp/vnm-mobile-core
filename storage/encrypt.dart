@@ -2,8 +2,9 @@ import 'dart:math';
 
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter_keychain/flutter_keychain.dart';
-import 'package:vinamilk_b2b/vnm/core/exception/exception.dart';
-import 'package:vinamilk_b2b/vnm/core/global/logger.dart';
+
+import '../exception/exception.dart';
+import '../global/logger.dart';
 
 class Encrypt {
   String databaseName = "default";

@@ -2,6 +2,7 @@ import 'api/dior.dart';
 import 'exception/exception.dart';
 import 'global/auth.dart';
 import 'global/logger.dart';
+import 'global/route.dart';
 import 'model/auth_token.dart';
 import 'model/error_message.dart';
 import 'storage/storage.dart';
@@ -12,11 +13,19 @@ class VNMBinding {
 
   Future<dynamic> Function()? _externalLogout;
   Future<dynamic> Function(String userId)? _externalUserIdUpdate;
+  Future<dynamic> Function(
+      {required String phoneNo,
+      required String customerCode,
+      required String storeCode})? _externalLoginTracking;
+
   Future Function()? _onFirebaseInit;
   Future Function()? _onTrackingConfigInit;
   Future<AuthTokenResponse?> Function(String token)? _onRefreshToken;
   Future<Iterable<ErrorMessageConfig>> Function()? _onRemoteErrorMessages;
   Function(dynamic exception, dynamic stackTrace)? _onCaptureException;
+  VNMAppRoute? _homeRoute;
+  VNMAppRoute? _loginRoute;
+  VNMAppRoute? _welcomeBackRoute;
 
   VNMBinding._();
 
@@ -34,8 +43,13 @@ class VNMBinding {
 
     //auth
     Auth().config(
-        externalLogout: _externalLogout,
-        externalUserIdUpdate: _externalUserIdUpdate);
+      externalLogout: _externalLogout,
+      externalUserIdUpdate: _externalUserIdUpdate,
+      externalLoginTracking: _externalLoginTracking,
+      homeRoute: _homeRoute!,
+      loginRoute: _loginRoute!,
+      welcomeBackRoute: _welcomeBackRoute!,
+    );
 
     //version
     Version().config(iOSAppId: iOSAppId);
@@ -56,9 +70,25 @@ class VNMBinding {
 
   void configAuth(
       {Future<dynamic> Function()? externalLogout,
-      Future<dynamic> Function(String userId)? externalUserIdUpdate}) {
+      Future<dynamic> Function(String userId)? externalUserIdUpdate,
+      Future<dynamic> Function(
+              {required String phoneNo,
+              required String customerCode,
+              required String storeCode})?
+          externalLoginTracking}) {
     _externalLogout = externalLogout;
     _externalUserIdUpdate = externalUserIdUpdate;
+    _externalLoginTracking = externalLoginTracking;
+  }
+
+  void configAuthRoute({
+    required VNMAppRoute homeRoute,
+    required VNMAppRoute loginRoute,
+    required VNMAppRoute welcomeBackRoute,
+  }) {
+    _homeRoute = homeRoute;
+    _loginRoute = loginRoute;
+    _welcomeBackRoute = welcomeBackRoute;
   }
 
   void configFirebase({Future Function()? onFirebaseInit}) {

@@ -5,11 +5,10 @@ import 'package:collection/collection.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:flutter/foundation.dart';
-import 'package:vinamilk_b2b/vnm/core/exception/dio_exception.dart';
-import 'package:vinamilk_b2b/vnm/core/util/jwt.dart';
 
 import '../../extension/if_null.dart';
 import '../env.dart';
+import '../exception/dio_exception.dart';
 import '../exception/index.dart';
 import '../global/auth.dart';
 import '../global/logger.dart';
@@ -17,6 +16,7 @@ import '../model/auth_token.dart';
 import '../model/error_message.dart';
 import '../model/mappable.dart';
 import '../storage/storage.dart';
+import '../util/jwt.dart';
 import 'base.dart';
 import 'interceptors.dart';
 

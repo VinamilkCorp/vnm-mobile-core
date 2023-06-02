@@ -1,5 +1,5 @@
-import 'package:vinamilk_b2b/vnm/core/exception/exception.dart';
 
+import 'exception.dart';
 import 'message_exception.dart';
 import 'server_exceptions.dart';
 

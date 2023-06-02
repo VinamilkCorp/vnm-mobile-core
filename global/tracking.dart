@@ -1,9 +1,7 @@
-import 'route.dart';
-
 class VNMTrackingConfig {
   static VNMTrackingConfig _i = VNMTrackingConfig._();
   Function(String label)? logButton;
-  Function(AppRoute appRoute, Object? args)? logRoute;
+  Function(String routeName, Object? args)? logRoute;
 
   VNMTrackingConfig._();
 
@@ -11,7 +9,7 @@ class VNMTrackingConfig {
 
   Future<void> initialize(
       {Function(String label)? logButton,
-      Function(AppRoute appRoute, Object? args)? logRoute}) async {
+      Function(String routeName, Object? args)? logRoute}) async {
     this.logButton = logButton;
     this.logRoute = logRoute;
   }

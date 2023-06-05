@@ -97,6 +97,8 @@ class Auth {
 
   Future<bool> initialized() => _completer.future;
 
+  bool get initCompleted => _completer.isCompleted;
+
   Future<void> init(BuildContext context) async {
     if (_completer.isCompleted) return;
     _auth = Provider.of<AuthNotifier>(context, listen: false);

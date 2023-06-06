@@ -14,14 +14,22 @@ import 'message_exception.dart';
 class VNMException {
   static final _instance = VNMException._();
   Function(dynamic exception, dynamic stackTrace)? onCaptureException;
+  Function(String message)? onLogException;
 
   VNMException._();
 
   factory VNMException() => _instance;
 
   void config(
-      {Function(dynamic exception, dynamic stackTrace)? onCaptureException}) {
+      {Function(dynamic exception, dynamic stackTrace)? onCaptureException,
+        Function(String message)? onLogException}) {
     this.onCaptureException = onCaptureException;
+    this.onLogException = onLogException;
+  }
+
+  Future<void> log(String message) async {
+    if(Env().isProd && onLogException!=null)
+    return onLogException!(message);
   }
 
   void capture(exception, [stackTrace]) async {

@@ -26,6 +26,7 @@ class VNMBinding {
   VNMAppRoute? _homeRoute;
   VNMAppRoute? _loginRoute;
   VNMAppRoute? _welcomeBackRoute;
+  Function(String message)? _onLogException;
 
   VNMBinding._();
 
@@ -39,7 +40,9 @@ class VNMBinding {
     VNMLogger().config(name: appName);
 
     //exception
-    VNMException().config(onCaptureException: _onCaptureException);
+    VNMException().config(
+        onCaptureException: _onCaptureException,
+        onLogException: _onLogException);
 
     //auth
     Auth().config(
@@ -107,7 +110,9 @@ class VNMBinding {
   }
 
   void configException(
-      {Function(dynamic exception, dynamic stackTrace)? onCaptureException}) {
+      {Function(dynamic exception, dynamic stackTrace)? onCaptureException,
+      Function(String message)? onLogException}) {
     _onCaptureException = onCaptureException;
+    _onLogException = onLogException;
   }
 }

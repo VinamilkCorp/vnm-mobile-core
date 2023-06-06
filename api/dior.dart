@@ -49,9 +49,9 @@ class VNMDio {
 
   Dio get _dio {
     var dio = Dio();
-    dio.interceptors.add(LoggingInterceptor());
+    dio.interceptors.add(APIInterceptor(headers: headers));
     if (Env().isDev || kDebugMode) {
-      dio.interceptors.add(APIInterceptor(headers: headers));
+      dio.interceptors.add(LoggingInterceptor());
       (dio.httpClientAdapter as IOHttpClientAdapter).onHttpClientCreate =
           (HttpClient client) {
         client.badCertificateCallback =

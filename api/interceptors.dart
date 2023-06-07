@@ -67,21 +67,26 @@ class APIInterceptor implements Interceptor {
   @override
   Future<void> onResponse(
       Response response, ResponseInterceptorHandler handler) async {
-    if(response.statusCode != null && response.statusCode! >= 400){
-      try{
-        VNMException().log(jsonEncode({
-          "method": response.requestOptions.method,
-          "uri":  response.requestOptions.uri.toString(),
-          "header":  response.requestOptions.headers,
-          "queryParameters":  response.requestOptions.queryParameters,
-          "data":  response.requestOptions.data,
-          "response": {
-            "statusCode": response.statusCode,
-            "statusMessage": response.statusMessage,
-          }
-        }));
-      }catch(exception,stackTrace){
-        VNMException().capture(exception,stackTrace);
+    if (response.statusCode != null && response.statusCode! >= 400) {
+      try {
+        VNMException().log(
+            "[${response.statusCode}] ${response.requestOptions.uri.toString()}",
+            jsonEncode({
+              "request": {
+                "method": response.requestOptions.method,
+                "uri": response.requestOptions.uri.toString(),
+                "header": response.requestOptions.headers,
+                "queryParameters": response.requestOptions.queryParameters,
+                "data": response.requestOptions.data,
+              },
+              "response": {
+                "statusCode": response.statusCode,
+                "statusMessage": response.statusMessage,
+                "data": response.data,
+              }
+            }));
+      } catch (exception, stackTrace) {
+        VNMException().capture(exception, stackTrace);
       }
     }
     handler.next(response);
@@ -89,21 +94,28 @@ class APIInterceptor implements Interceptor {
 
   @override
   void onError(DioError err, ErrorInterceptorHandler handler) {
-    try{
-      VNMException().log(jsonEncode({
-        "method": err.requestOptions.method,
-        "uri":  err.requestOptions.uri.toString(),
-        "header":  err.requestOptions.headers,
-        "queryParameters":  err.requestOptions.queryParameters,
-        "data":  err.requestOptions.data,
-        "response": {
-          "message": err.message,
-          "statusCode": err.response?.statusCode,
-          "statusMessage": err.response?.statusMessage,
-        }
-      }));
-    }catch(exception,stackTrace){
-      VNMException().capture(exception,stackTrace);
+    try {
+      VNMException().log(
+          "[${err.type.toString()}] ${err.error?.toString()}",
+          jsonEncode({
+            "type": err.type.toString(),
+            "error": err.error?.toString(),
+            "message": err.message,
+            "request": {
+              "method": err.requestOptions.method,
+              "uri": err.requestOptions.uri.toString(),
+              "header": err.requestOptions.headers,
+              "queryParameters": err.requestOptions.queryParameters,
+              "data": err.requestOptions.data,
+            },
+            "response": {
+              "statusCode": err.response?.statusCode,
+              "statusMessage": err.response?.statusMessage,
+              "data": err.response?.data,
+            }
+          }));
+    } catch (exception, stackTrace) {
+      VNMException().capture(exception, stackTrace);
     }
     handler.next(err);
   }

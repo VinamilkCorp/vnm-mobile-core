@@ -46,6 +46,10 @@ class Storage {
     return _user.setString(key, value);
   }
 
+  Future<void> remove(String key) async {
+    return _user.delete([key]);
+  }
+
   int? getInt(String key) {
     var value = _user.get(key);
     if (value is int) return value;
@@ -389,22 +393,23 @@ class _UserStorage extends BaseStorage {
 
   Stream<bool> clearExpiredObjects(Iterable keys) async* {
     VNMLogger().warning("Check expired objects");
+    List<String> removeKeys = [];
     keys.forEach((key) {
       var value = get(key);
       if (value is String)
         try {
           var json = jsonDecode(value);
-          List<String> removeKeys = [];
           var timestamp =
               DateTime.fromMillisecondsSinceEpoch(json["timestamp"]);
           if (DateTime.now().difference(timestamp).inDays > 3) {
             removeKeys.add(key);
           }
-          if (removeKeys.isNotEmpty) delete(removeKeys);
         } catch (exception, stackTrace) {
           VNMLogger().error(exception, stackTrace);
+          removeKeys.add(key);
         }
     });
+    if (removeKeys.isNotEmpty) delete(removeKeys);
     await Future.delayed(Duration(milliseconds: 800));
     yield true;
   }

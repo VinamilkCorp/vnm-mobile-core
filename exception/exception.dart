@@ -8,13 +8,14 @@ import '../global/auth.dart';
 import '../global/localization.dart';
 import '../global/logger.dart';
 import '../global/navigator.dart';
+import '../storage/storage.dart';
 import 'app_exception.dart';
 import 'message_exception.dart';
 
 class VNMException {
   static final _instance = VNMException._();
   Function(dynamic exception, dynamic stackTrace)? onCaptureException;
-  Function(String message)? onLogException;
+  Function(String title, String message)? onLogException;
 
   VNMException._();
 
@@ -22,14 +23,14 @@ class VNMException {
 
   void config(
       {Function(dynamic exception, dynamic stackTrace)? onCaptureException,
-        Function(String message)? onLogException}) {
+      Function(String title, String message)? onLogException}) {
     this.onCaptureException = onCaptureException;
     this.onLogException = onLogException;
   }
 
-  Future<void> log(String message) async {
-    if(Env().isProd && onLogException!=null)
-    return onLogException!(message);
+  Future<void> log(String title, String message) async {
+    if (Env().isProd && onLogException != null)
+      return onLogException!(title, message);
   }
 
   void capture(exception, [stackTrace]) async {
@@ -51,8 +52,9 @@ class VNMException {
         await Alert.close(message: locale.no_internet_connection).show();
       } else {
         if (exception is MessageException) {
-          await Alert.close(message: exception.message(VNMNavigator().context))
-              .show();
+          String message = exception.message(VNMNavigator().context);
+          await Storage().setString("exception", message);
+          await Alert.close(message: message).show();
         }
       }
     }

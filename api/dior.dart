@@ -140,9 +140,6 @@ class VNMDio {
 extension DioEx on Dio {
   Future<Response?> catcher(Future Function() callback,
       [bool allowRefreshToken = true]) async {
-    Map<String, MessageException> skipForAuth = {
-      "auth/signin/pin": WrongPinException()
-    };
     DioError? dioError;
     Response? response;
     try {
@@ -162,81 +159,103 @@ extension DioEx on Dio {
       if (exception is DioError) dioError = exception;
     }
 
-    var status = response?.statusCode ?? -1;
     if (dioError != null) {
-      if (status == HttpStatus.unauthorized) {
-        String path = (response?.requestOptions.path).ifNull();
-        String? key =
-            skipForAuth.keys.firstWhereOrNull((k) => path.endsWith(k));
-        if (key != null) {
-          throw skipForAuth[key]!;
-        }
-        if (JwtUtil().isExpired(Auth().refreshToken)) {
-          await Auth().foreLogout();
-        } else {
-          if (allowRefreshToken == true) {
-            AuthTokenResponse? authToken;
-            if (VNMDioConfig().onRefreshToken != null)
-              authToken = await VNMDioConfig()
-                  .onRefreshToken!(Auth().refreshToken)
-                  .onError((error, stackTrace) => null);
-            // await AuthAPI()
-            //     .refreshToken(Auth().refreshToken)
-            //     .onError((error, stackTrace) => null);
-            if (authToken == null) {
-              await Auth().foreLogout();
-            } else {
-              Auth().updateToken(authToken);
-              await Future.delayed(Duration(milliseconds: 500));
-              return catcher(callback, false);
-            }
-          } else {
-            throw UnauthorizedException();
-          }
-        }
-      } else {
-        dioError!.fail();
-      }
+      if (response == null) throw dioError!;
+      await dioErrorHandler(response, allowRefreshToken, callback);
     } else {
       return response;
     }
     return null;
   }
-}
 
-extension DioErrorEx on DioError {
-  Future fail() async {
-    if (response == null) throw this;
-    var status = response?.statusCode ?? -1;
-    if (status == HttpStatus.badRequest) {
-      var errorDetails = response?.data is String
-          ? json.decode(response?.data)
-          : response?.data;
-      String? errorCode = errorDetails['code'];
-      Iterable<ErrorMessageConfig> errors = [];
-      if (VNMDioConfig().onRemoteErrorMessages != null)
-        errors = await VNMDioConfig().onRemoteErrorMessages!();
-      var errorMsg = errors.firstWhereOrNull((it) => it.code == errorCode);
-      if (errorMsg == null) {
-        var code = ExceptionCode.values
-            .firstWhereOrNull((it) => it.name == errorDetails['code']);
-        throw code?.exception ??
-            UnknownMessageException(
-                detail: jsonEncode({
-              "status": status,
-              "message": response?.statusMessage,
-              "code": errorDetails['code']
-            }));
-      } else {
-        throw RemoteErrorMessageException(errorMsg);
-      }
+  Future dioErrorHandler(Response response, bool allowRefreshToken,
+      Future Function() callback) async {
+    var status = response.statusCode ?? -1;
+    if (status == HttpStatus.unauthorized) {
+      await unauthorizedHandler(response, allowRefreshToken, callback);
+    } else if (status == HttpStatus.badRequest) {
+      await badRequestHandler(response);
     } else if (status == HttpStatus.internalServerError) {
-      throw UnknownMessageException(detail: response?.statusMessage);
-    } else if (status == HttpStatus.unauthorized) {
-      throw UnauthorizedException();
+      throw UnknownMessageException(detail: response.statusMessage);
     } else {
       throw this;
     }
+  }
+
+  Future unauthorizedHandler(Response response, bool allowRefreshToken,
+      Future Function() callback) async {
+    var errorMsg = await remoteErrorHandler(response);
+    if (errorMsg == null) {
+      Map<String, MessageException> skipForAuth = {
+        "auth/signin/pin": WrongPinException()
+      };
+      String path = (response.requestOptions.path).ifNull();
+      String? key = skipForAuth.keys.firstWhereOrNull((k) => path.endsWith(k));
+      if (key != null) {
+        throw skipForAuth[key]!;
+      }
+      if (JwtUtil().isExpired(Auth().refreshToken)) {
+        await Auth().foreLogout();
+      } else {
+        if (allowRefreshToken == true) {
+          AuthTokenResponse? authToken;
+          if (VNMDioConfig().onRefreshToken != null)
+            authToken = await VNMDioConfig()
+                .onRefreshToken!(Auth().refreshToken)
+                .onError((error, stackTrace) => null);
+          if (authToken == null) {
+            await Auth().foreLogout();
+          } else {
+            Auth().updateToken(authToken);
+            await Future.delayed(Duration(milliseconds: 500));
+            return catcher(callback, false);
+          }
+        } else {
+          throw UnauthorizedException();
+        }
+      }
+    } else {
+      throw RemoteErrorMessageException(errorMsg);
+    }
+  }
+
+  Future badRequestHandler(Response response) async {
+    var errorMsg = await remoteErrorHandler(response);
+    if (errorMsg == null) {
+      String? errorCode = getErrorCode(response);
+      var code =
+          ExceptionCode.values.firstWhereOrNull((it) => it.name == errorCode);
+      throw code?.exception ??
+          UnknownMessageException(
+              detail: jsonEncode({
+            "status": response.statusCode,
+            "message": response.statusMessage,
+            "code": errorCode
+          }));
+    } else {
+      throw RemoteErrorMessageException(errorMsg);
+    }
+  }
+
+  Future<ErrorMessageConfig?> remoteErrorHandler(Response response) async {
+    String? errorCode = getErrorCode(response);
+    Iterable<ErrorMessageConfig> errors = [];
+    if (VNMDioConfig().onRemoteErrorMessages != null)
+      errors = await VNMDioConfig().onRemoteErrorMessages!();
+    var errorMsg = errors.firstWhereOrNull((it) => it.code == errorCode);
+    return errorMsg;
+  }
+
+  String? getErrorCode(Response response) {
+    try {
+      var errorDetails =
+          response.data is String ? json.decode(response.data) : response.data;
+      String? errorCode = errorDetails['code'];
+      return errorCode;
+    } catch (exception, stackTrace) {
+      // VNMException().capture(exception,stackTrace);
+    }
+    return null;
   }
 }
 

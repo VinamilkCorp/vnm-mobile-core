@@ -26,7 +26,7 @@ class VNMBinding {
   VNMAppRoute? _homeRoute;
   VNMAppRoute? _loginRoute;
   VNMAppRoute? _welcomeBackRoute;
-  Function(String message)? _onLogException;
+  Function(String title, String message)? _onLogException;
 
   VNMBinding._();
 
@@ -111,7 +111,7 @@ class VNMBinding {
 
   void configException(
       {Function(dynamic exception, dynamic stackTrace)? onCaptureException,
-      Function(String message)? onLogException}) {
+      Function(String title, String message)? onLogException}) {
     _onCaptureException = onCaptureException;
     _onLogException = onLogException;
   }

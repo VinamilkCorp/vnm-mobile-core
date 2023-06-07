@@ -180,9 +180,6 @@ extension DioEx on Dio {
               authToken = await VNMDioConfig()
                   .onRefreshToken!(Auth().refreshToken)
                   .onError((error, stackTrace) => null);
-            // await AuthAPI()
-            //     .refreshToken(Auth().refreshToken)
-            //     .onError((error, stackTrace) => null);
             if (authToken == null) {
               await Auth().foreLogout();
             } else {

@@ -17,7 +17,7 @@ class VNMBinding {
   Future<AuthTokenResponse?> Function(String token)? _onRefreshToken;
   Future<Iterable<ErrorMessageConfig>> Function()? _onRemoteErrorMessages;
   Function(dynamic exception, dynamic stackTrace)? _onCaptureException;
-  Function(String message)? _onLogException;
+  Function(String title, String message)? _onLogException;
 
   VNMBinding._();
 
@@ -31,7 +31,9 @@ class VNMBinding {
     VNMLogger().config(name: appName);
 
     //exception
-    VNMException().config(onCaptureException: _onCaptureException,onLogException:_onLogException);
+    VNMException().config(
+        onCaptureException: _onCaptureException,
+        onLogException: _onLogException);
 
     //auth
     Auth().config(
@@ -78,7 +80,8 @@ class VNMBinding {
   }
 
   void configException(
-      {Function(dynamic exception, dynamic stackTrace)? onCaptureException, Function(String message)? onLogException}) {
+      {Function(dynamic exception, dynamic stackTrace)? onCaptureException,
+      Function(String title, String message)? onLogException}) {
     _onCaptureException = onCaptureException;
     _onLogException = onLogException;
   }

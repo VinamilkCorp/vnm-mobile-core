@@ -14,7 +14,7 @@ import 'message_exception.dart';
 class VNMException {
   static final _instance = VNMException._();
   Function(dynamic exception, dynamic stackTrace)? onCaptureException;
-  Function(String message)? onLogException;
+  Function(String title, String message)? onLogException;
 
   VNMException._();
 
@@ -22,14 +22,14 @@ class VNMException {
 
   void config(
       {Function(dynamic exception, dynamic stackTrace)? onCaptureException,
-        Function(String message)? onLogException}) {
+      Function(String title, String message)? onLogException}) {
     this.onCaptureException = onCaptureException;
     this.onLogException = onLogException;
   }
 
-  Future<void> log(String message) async {
-    if(Env().isProd && onLogException!=null)
-    return onLogException!(message);
+  Future<void> log(String title, String message) async {
+    if (Env().isProd && onLogException != null)
+      return onLogException!(title, message);
   }
 
   void capture(exception, [stackTrace]) async {

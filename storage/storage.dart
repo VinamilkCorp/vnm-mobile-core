@@ -46,6 +46,10 @@ class Storage {
     return _user.setString(key, value);
   }
 
+  Future<void> remove(String key) async {
+    return _user.delete([key]);
+  }
+
   int? getInt(String key) {
     var value = _user.get(key);
     if (value is int) return value;

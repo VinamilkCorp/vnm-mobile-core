@@ -8,6 +8,7 @@ import '../global/auth.dart';
 import '../global/localization.dart';
 import '../global/logger.dart';
 import '../global/navigator.dart';
+import '../storage/storage.dart';
 import 'app_exception.dart';
 import 'message_exception.dart';
 
@@ -51,8 +52,9 @@ class VNMException {
         await Alert.close(message: locale.no_internet_connection).show();
       } else {
         if (exception is MessageException) {
-          await Alert.close(message: exception.message(VNMNavigator().context))
-              .show();
+          String message = exception.message(VNMNavigator().context);
+          await Storage().setString("exception", message);
+          await Alert.close(message: message).show();
         }
       }
     }

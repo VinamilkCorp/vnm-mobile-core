@@ -50,12 +50,10 @@ class VNMException {
       } else if (exception is SocketException) {
         var locale = Localization().locale;
         await Alert.close(message: locale.no_internet_connection).show();
-      } else {
-        if (exception is MessageException) {
-          String message = exception.message(VNMNavigator().context);
-          await Storage().setString("exception", message);
-          await Alert.close(message: message).show();
-        }
+      } else if (exception is MessageException) {
+        String message = exception.message(VNMNavigator().context);
+        await Storage().setString("exception", message);
+        await Alert.close(message: message).show();
       }
     }
   }

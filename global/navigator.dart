@@ -15,6 +15,10 @@ class VNMNavigator {
     return key.currentContext!;
   }
 
+  bool get isReady {
+    return key.currentContext != null;
+  }
+
   VNMNavigator._();
 
   factory VNMNavigator() => _i;

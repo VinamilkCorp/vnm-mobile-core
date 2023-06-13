@@ -157,12 +157,50 @@ class LoggingInterceptor implements Interceptor {
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    VNMLogger().finest(response);
+    try {
+      VNMLogger().finest({
+        "request": {
+          "method": response.requestOptions.method,
+          "uri": response.requestOptions.uri.toString(),
+          "header": response.requestOptions.headers,
+          "queryParameters": response.requestOptions.queryParameters,
+          "data": response.requestOptions.data,
+        },
+        "response": {
+          "statusCode": response.statusCode,
+          "statusMessage": response.statusMessage,
+          "data": response.data,
+        }
+      });
+    } catch (exception, stackTrace) {
+      VNMException().capture(exception, stackTrace);
+    }
     handler.next(response);
   }
 
   @override
   void onError(DioError err, ErrorInterceptorHandler handler) {
+    try {
+      VNMLogger().error({
+        "type": err.type.toString(),
+        "error": err.error?.toString(),
+        "message": err.message,
+        "request": {
+          "method": err.requestOptions.method,
+          "uri": err.requestOptions.uri.toString(),
+          "header": err.requestOptions.headers,
+          "queryParameters": err.requestOptions.queryParameters,
+          "data": err.requestOptions.data,
+        },
+        "response": {
+          "statusCode": err.response?.statusCode,
+          "statusMessage": err.response?.statusMessage,
+          "data": err.response?.data,
+        }
+      });
+    } catch (exception, stackTrace) {
+      VNMException().capture(exception, stackTrace);
+    }
     handler.next(err);
   }
 }

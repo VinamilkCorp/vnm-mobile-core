@@ -1,9 +1,9 @@
 import 'package:open_store/open_store.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:vinamilk_b2b/firebase/firebase.dart';
-import 'package:vinamilk_b2b/vnm/core/exception/exception.dart';
 
+import '../../firebase/firebase.dart';
 import '../../material/widgets/alert.dart';
+import '../exception/exception.dart';
 import '../global/localization.dart';
 
 class Version {

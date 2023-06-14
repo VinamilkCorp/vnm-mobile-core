@@ -7,7 +7,7 @@ import 'package:rxdart/rxdart.dart';
 
 import '../exception/exception.dart';
 import '../global/logger.dart';
-import '../model/auth_token.dart';
+import '../../feature/auth/model/auth_token.dart';
 import 'encrypt.dart';
 
 class _StorageKey {

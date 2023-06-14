@@ -1,9 +1,9 @@
+import '../feature/auth/auth.dart';
+import '../feature/auth/model/auth_token.dart';
 import 'api/dior.dart';
 import 'exception/exception.dart';
-import 'global/auth.dart';
 import 'global/logger.dart';
 import 'global/route.dart';
-import 'model/auth_token.dart';
 import 'model/error_message.dart';
 import 'storage/storage.dart';
 import 'util/version.dart';

@@ -4,7 +4,7 @@ import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 
 import '../exception/index.dart';
-import '../global/auth.dart';
+import '../../feature/auth/auth.dart';
 import '../global/logger.dart';
 import '../storage/storage.dart';
 

@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 
+import '../../feature/auth/auth.dart';
 import '../../material/widgets/alert.dart';
 import '../env.dart';
-import '../global/auth.dart';
 import '../global/localization.dart';
 import '../global/logger.dart';
 import '../global/navigator.dart';

@@ -106,4 +106,20 @@ class Encrypt {
     final decrypted_data = e.decrypt(Encrypted.fromBase64(text), iv: iv);
     return decrypted_data;
   }
+
+  Key generateEncrypterKey(String source) {
+    if (source.length >= 32) {
+      return Key.fromUtf8(source.substring(0, 32));
+    } else {
+      return generateEncrypterKey(source + source);
+    }
+  }
+
+  IV generateEncrypterIV(String source) {
+    if (source.length >= 16) {
+      return IV.fromUtf8(source.substring(0, 16));
+    } else {
+      return generateEncrypterIV(source + source);
+    }
+  }
 }

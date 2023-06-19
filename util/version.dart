@@ -29,12 +29,14 @@ class Version {
     return null;
   }
 
-  Future<bool> _checkSupported() async {
+  Future<bool> _checkSupported(String packageName) async {
     try {
       String? version = await getCurrent();
       if (version == null || version.isEmpty) return false;
-      String? supportedVersion =
-          await VNMFirebase().remoteConfig.minSupportedVersion();
+      String? supportedVersion = packageName.startsWith("vn.com.vinamilk.sfa")
+          ? await VNMFirebase().remoteConfig.sfaMinSupportedVersion()
+          : await VNMFirebase().remoteConfig.minSupportedVersion();
+
       if (supportedVersion == null || supportedVersion.isEmpty) return false;
       int currentVersion = _getExtendedVersionNumber(version);
       int minVersion = _getExtendedVersionNumber(supportedVersion);
@@ -46,10 +48,10 @@ class Version {
   }
 
   Future<void> showRequiredUpgradeAlert() async {
-    bool needUpgrade = await _checkSupported();
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    bool needUpgrade = await _checkSupported(packageInfo.packageName);
     if (needUpgrade)
       try {
-        PackageInfo packageInfo = await PackageInfo.fromPlatform();
         var locale = Localization().locale;
         String title = locale.upgrade_application;
         String content = locale.upgrade_application_desc;

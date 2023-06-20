@@ -1,3 +1,5 @@
+import 'package:vinamilk_sfa/vnm/feature/auth/model/user.dart';
+
 import '../feature/auth/auth.dart';
 import '../feature/auth/model/auth_token.dart';
 import 'api/dior.dart';
@@ -27,6 +29,7 @@ class VNMBinding {
   VNMAppRoute? _loginRoute;
   VNMAppRoute? _welcomeBackRoute;
   Function(String title, String message)? _onLogException;
+  UserRole? _role;
 
   VNMBinding._();
 
@@ -35,6 +38,7 @@ class VNMBinding {
   Future<void> initialized(
       {required String appName,
       required String databaseName,
+      required UserRole role,
       String? iOSAppId}) async {
     //log
     VNMLogger().config(name: appName);
@@ -46,6 +50,7 @@ class VNMBinding {
 
     //auth
     Auth().config(
+      role: role,
       externalLogout: _externalLogout,
       externalUserIdUpdate: _externalUserIdUpdate,
       externalLoginTracking: _externalLoginTracking,

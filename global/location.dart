@@ -19,7 +19,7 @@ class VNMLocation {
   Future<Position> getMyLocation({bool retry = true}) async {
     //check fake location
     if (await SafeDevice.canMockLocation && !kDebugMode) {
-      Alert.close(
+      await Alert.close(
               message: Localization()
                   .locale
                   .mock_location_cannot_detect_your_location)

@@ -1,11 +1,12 @@
 import 'dart:async';
 
 import 'package:app_settings/app_settings.dart';
-import 'package:fl_location/fl_location.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:safe_device/safe_device.dart';
 import 'package:vinamilk_sfa/vnm/core/global/loader.dart';
 import 'package:vinamilk_sfa/vnm/core/global/localization.dart';
+import 'package:vinamilk_sfa/vnm/core/global/logger.dart';
 import 'package:vinamilk_sfa/vnm/material/widgets/alert.dart';
 
 class VNMLocation {
@@ -15,14 +16,43 @@ class VNMLocation {
 
   factory VNMLocation() => _i;
 
-  Future<bool> _checkAndRequestPermission(
-      {bool? background, bool retry = true}) async {
-    if (!await FlLocation.isLocationServicesEnabled) {
-      return false;
+  Future<Position> getMyLocation({bool retry = true}) async {
+    //check fake location
+    if (await SafeDevice.canMockLocation && !kDebugMode) {
+      Alert.close(
+              message: Localization()
+                  .locale
+                  .mock_location_cannot_detect_your_location)
+          .show();
+      return Future.error('Location is fake');
     }
 
-    var locationPermission = await FlLocation.checkLocationPermission();
-    if (locationPermission == LocationPermission.deniedForever) {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      await Alert.close(
+              message:
+                  Localization().locale.please_provide_your_permission_location)
+          .show();
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        await Alert.close(
+                message: Localization()
+                    .locale
+                    .please_provide_your_permission_location)
+            .show();
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
       if (retry) {
         await Alert.close(
                 message: Localization()
@@ -32,43 +62,42 @@ class VNMLocation {
         AppSettings.openLocationSettings();
         await Future.delayed(const Duration(seconds: 3));
         await Alert.goOn(
-          message:
-              Localization().locale.please_provide_your_permission_location,
-        ).show();
-        return _checkAndRequestPermission(background: background, retry: false);
+                message: Localization()
+                    .locale
+                    .please_provide_your_permission_location)
+            .show();
+        return getMyLocation(retry: false);
+      } else {
+        return Future.error(
+            'Location permissions are permanently denied, we cannot request permissions.');
       }
-      return false;
-    } else if (locationPermission == LocationPermission.denied) {
-      locationPermission = await FlLocation.requestLocationPermission();
-      if (locationPermission == LocationPermission.denied ||
-          locationPermission == LocationPermission.deniedForever) return false;
     }
-    if (background == true &&
-        locationPermission == LocationPermission.whileInUse) return false;
-    return true;
+
+    if (kDebugMode) {
+      return Position.fromMap(
+          {"latitude": 10.730657594165702, "longitude": 106.72377774232764});
+    }
+    Loader().show();
+    return await Geolocator.getCurrentPosition(
+            timeLimit: const Duration(seconds: 10))
+        .onError((error, stackTrace) {
+      Alert.close(message: Localization().locale.cannot_detect_your_location)
+          .show();
+      return Future.error(Localization().locale.cannot_detect_your_location);
+    }).whenComplete(() {
+      Loader().hide();
+    });
   }
 
-  Future<Location?> getMyLocation() async {
-    Location? result;
-    if (await _checkAndRequestPermission()) {
-      const timeLimit = Duration(seconds: 10);
-      await Loader().wrap(func: () async {
-        await FlLocation.getLocation(timeLimit: timeLimit).then((location) {
-          print('location: ${location.toJson().toString()}');
-          result = location;
-        }).onError((error, stackTrace) {
-          print('error: ${error.toString()}');
-          if (kDebugMode &&
-              error is PlatformException &&
-              error.code == "LOCATION_UPDATE_FAILED") {
-            result = Location.fromJson({
-              "latitude": 10.730657594165702,
-              "longitude": 106.72377774232764
-            });
-          }
-        });
-      });
-    }
-    return result;
+  double calDistance(
+    double startLat,
+    double startLng,
+    double endLat,
+    double endLng,
+  ) {
+    var distance =
+        Geolocator.distanceBetween(startLat, startLng, endLat, endLng);
+    VNMLogger().info(distance);
+    return distance;
   }
 }

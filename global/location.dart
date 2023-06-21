@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:safe_device/safe_device.dart';
 import 'package:vinamilk_sfa/vnm/core/global/loader.dart';
 import 'package:vinamilk_sfa/vnm/core/global/localization.dart';
 import 'package:vinamilk_sfa/vnm/core/global/logger.dart';
@@ -17,16 +16,6 @@ class VNMLocation {
   factory VNMLocation() => _i;
 
   Future<Position> getMyLocation({bool retry = true}) async {
-    //check fake location
-    if (await SafeDevice.canMockLocation && !kDebugMode) {
-      await Alert.close(
-              message: Localization()
-                  .locale
-                  .mock_location_cannot_detect_your_location)
-          .show();
-      return Future.error('Location is fake');
-    }
-
     bool serviceEnabled;
     LocationPermission permission;
 
@@ -78,7 +67,7 @@ class VNMLocation {
           {"latitude": 10.730657594165702, "longitude": 106.72377774232764});
     }
     Loader().show();
-    return await Geolocator.getCurrentPosition(
+    var position = await Geolocator.getCurrentPosition(
             timeLimit: const Duration(seconds: 10))
         .onError((error, stackTrace) {
       Alert.close(message: Localization().locale.cannot_detect_your_location)
@@ -87,6 +76,17 @@ class VNMLocation {
     }).whenComplete(() {
       Loader().hide();
     });
+
+    //check fake location
+    if (position.isMocked && !kDebugMode) {
+      await Alert.close(
+              message: Localization()
+                  .locale
+                  .mock_location_cannot_detect_your_location)
+          .show();
+      return Future.error('Location is fake');
+    }
+    return position;
   }
 
   double calDistance(

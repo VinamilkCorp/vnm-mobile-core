@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import '../feature/auth/model/verify_flow_type.dart';
+
 class Env {
   String get name => _env;
 
@@ -15,4 +17,6 @@ class Env {
       : const bool.fromEnvironment("enable-analytics", defaultValue: false);
 
   String get VN_COUNTRY_CODE => "84";
+
+  VerifyFlowType get verifyFlowType => VerifyFlowType.REGISTER_STORE_OWNER;
 }

@@ -2,6 +2,7 @@ import 'package:vinamilk_sfa/vnm/feature/auth/model/user.dart';
 
 import '../feature/auth/auth.dart';
 import '../feature/auth/model/auth_token.dart';
+import '../feature/auth/model/verify_flow_type.dart';
 import 'api/dior.dart';
 import 'exception/exception.dart';
 import 'global/logger.dart';
@@ -30,6 +31,7 @@ class VNMBinding {
   VNMAppRoute? _welcomeBackRoute;
   Function(String title, String message)? _onLogException;
   UserRole? _role;
+  VerifyFlowType? _verifyFlowType;
 
   VNMBinding._();
 
@@ -39,6 +41,7 @@ class VNMBinding {
       {required String appName,
       required String databaseName,
       required UserRole role,
+      required VerifyFlowType verifyFlowType,
       String? iOSAppId}) async {
     //log
     VNMLogger().config(name: appName);
@@ -51,6 +54,7 @@ class VNMBinding {
     //auth
     Auth().config(
       role: role,
+      verifyFlowType: verifyFlowType,
       externalLogout: _externalLogout,
       externalUserIdUpdate: _externalUserIdUpdate,
       externalLoginTracking: _externalLoginTracking,

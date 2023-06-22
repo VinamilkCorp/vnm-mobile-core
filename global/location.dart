@@ -15,7 +15,7 @@ class VNMLocation {
 
   factory VNMLocation() => _i;
 
-  Future<Position> getMyLocation({bool retry = true}) async {
+  Future<Position?> getMyLocation({bool retry = true}) async {
     bool serviceEnabled;
     LocationPermission permission;
 
@@ -25,7 +25,7 @@ class VNMLocation {
               message:
                   Localization().locale.please_provide_your_permission_location)
           .show();
-      return Future.error('Location services are disabled.');
+      return null;
     }
 
     permission = await Geolocator.checkPermission();
@@ -37,7 +37,7 @@ class VNMLocation {
                     .locale
                     .please_provide_your_permission_location)
             .show();
-        return Future.error('Location permissions are denied');
+        return null;
       }
     }
 
@@ -57,8 +57,7 @@ class VNMLocation {
             .show();
         return getMyLocation(retry: false);
       } else {
-        return Future.error(
-            'Location permissions are permanently denied, we cannot request permissions.');
+        return null;
       }
     }
 
@@ -84,7 +83,7 @@ class VNMLocation {
                   .locale
                   .mock_location_cannot_detect_your_location)
           .show();
-      return Future.error('Location is fake');
+      return null;
     }
     return position;
   }

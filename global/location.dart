@@ -3,10 +3,11 @@ import 'dart:async';
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:vinamilk_sfa/vnm/core/global/loader.dart';
-import 'package:vinamilk_sfa/vnm/core/global/localization.dart';
-import 'package:vinamilk_sfa/vnm/core/global/logger.dart';
-import 'package:vinamilk_sfa/vnm/material/widgets/alert.dart';
+
+import '../../material/widgets/alert.dart';
+import 'loader.dart';
+import 'localization.dart';
+import 'logger.dart';
 
 class VNMLocation {
   static final VNMLocation _i = VNMLocation._();

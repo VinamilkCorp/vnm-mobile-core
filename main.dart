@@ -1,7 +1,6 @@
-import 'package:vinamilk_sfa/vnm/feature/auth/model/user.dart';
-
 import '../feature/auth/auth.dart';
 import '../feature/auth/model/auth_token.dart';
+import '../feature/auth/model/user.dart';
 import '../feature/auth/model/verify_flow_type.dart';
 import 'api/dior.dart';
 import 'exception/exception.dart';
@@ -30,8 +29,6 @@ class VNMBinding {
   VNMAppRoute? _loginRoute;
   VNMAppRoute? _welcomeBackRoute;
   Function(String title, String message)? _onLogException;
-  UserRole? _role;
-  VerifyFlowType? _verifyFlowType;
 
   VNMBinding._();
 

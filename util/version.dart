@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:open_store/open_store.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -48,6 +49,7 @@ class Version {
   }
 
   Future<void> showRequiredUpgradeAlert() async {
+    if (kDebugMode) return;
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     bool needUpgrade = await _checkSupported(packageInfo.packageName);
     if (needUpgrade)

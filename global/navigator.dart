@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../global/route.dart';
+import 'route.dart';
 
 class VNMNavigator {
   static VNMNavigator _i = VNMNavigator._();

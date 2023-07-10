@@ -1,6 +1,5 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class NetworkNotifier extends ChangeNotifier {
   bool _connected = true;
@@ -22,34 +21,34 @@ class NetworkNotifier extends ChangeNotifier {
 
 class Network {
   static final Network _i = Network._();
-  NetworkNotifier? _notifier;
+  final NetworkNotifier _notifier = NetworkNotifier();
+  bool _listened = false;
 
   Network._();
 
   factory Network() => _i;
 
-  void init(BuildContext context) {
-    _notifier = Provider.of<NetworkNotifier>(context, listen: false);
+  NetworkNotifier get notifier => _notifier;
+
+  void _listen() {
+    if (_listened) return;
+    _listened = true;
     Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       if (result == ConnectivityResult.none) {
-        _notifier?._disconnect();
+        _notifier._disconnect();
       } else {
-        _notifier?._connect();
+        _notifier._connect();
       }
     });
   }
 
   void check() {
+    _listen();
     Connectivity().checkConnectivity().then((ConnectivityResult result) {
-      // if (_notifier?.isConnected == true) {
-      //   _notifier?._disconnect();
-      // } else {
-      //   _notifier?._connect();
-      // }
       if (result == ConnectivityResult.none) {
-        _notifier?._disconnect();
+        _notifier._disconnect();
       } else {
-        _notifier?._connect();
+        _notifier._connect();
       }
     });
   }

@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 
-import '../exception/index.dart';
-import '../../feature/auth/auth.dart';
+import '../../auth/auth.dart';
+import '../../material/exception/index.dart';
 import '../global/logger.dart';
 import '../storage/storage.dart';
 

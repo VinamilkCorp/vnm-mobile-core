@@ -3,21 +3,17 @@ import 'package:open_store/open_store.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../firebase/firebase.dart';
-import '../../material/widgets/alert.dart';
-import '../exception/exception.dart';
+import '../../material/exception/exception.dart';
+import '../../material/widget/basic/alert.dart';
+import '../global/bus.dart';
 import '../global/localization.dart';
 
 class Version {
-  String? iOSAppId;
   static Version _i = Version._();
 
   Version._();
 
   factory Version() => _i;
-
-  void config({String? iOSAppId}) {
-    this.iOSAppId = iOSAppId;
-  }
 
   Future<String?> getCurrent() async {
     try {
@@ -61,7 +57,7 @@ class Version {
             title: title,
             message: content,
             onAgree: () => OpenStore.instance.open(
-                appStoreId: iOSAppId,
+                appStoreId: VNMBus().touch<String>("appStoreId"),
                 androidAppBundleId: packageInfo.packageName)).show();
       } catch (exception, stackTrace) {
         throw exception;

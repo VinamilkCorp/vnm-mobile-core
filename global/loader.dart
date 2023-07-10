@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:provider/provider.dart';
 
-import '../exception/exception.dart';
+import '../../material/exception/exception.dart';
 
 class LoadingNotifier extends ChangeNotifier {
   bool _loading = false;
@@ -23,22 +22,20 @@ class LoadingNotifier extends ChangeNotifier {
 
 class Loader {
   static Loader _i = Loader._();
-  LoadingNotifier? _notifier;
+  LoadingNotifier _notifier = LoadingNotifier();
 
   Loader._();
 
   factory Loader() => _i;
 
-  void init(BuildContext context) {
-    _notifier = Provider.of<LoadingNotifier>(context, listen: false);
-  }
+  LoadingNotifier get notifier => _notifier;
 
   void show() {
-    _notifier?._show();
+    _notifier._show();
   }
 
   void hide() {
-    _notifier?._hide();
+    _notifier._hide();
   }
 
   Future wrap({required Future Function() func}) async {

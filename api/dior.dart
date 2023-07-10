@@ -6,37 +6,20 @@ import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../auth/auth.dart';
+import '../../auth/model/auth_token.dart';
+import '../base/api.dart';
 import '../../extension/if_null.dart';
+import '../../material/exception/dio_exception.dart';
+import '../../material/exception/index.dart';
 import '../env.dart';
-import '../exception/dio_exception.dart';
-import '../exception/index.dart';
-import '../../feature/auth/auth.dart';
+import '../global/bus.dart';
 import '../global/logger.dart';
-import '../../feature/auth/model/auth_token.dart';
 import '../model/error_message.dart';
 import '../model/mappable.dart';
 import '../storage/storage.dart';
 import '../util/jwt.dart';
-import 'base.dart';
 import 'interceptors.dart';
-
-class VNMDioConfig {
-  static VNMDioConfig _i = VNMDioConfig._();
-
-  VNMDioConfig._();
-
-  factory VNMDioConfig() => _i;
-
-  Future<AuthTokenResponse?> Function(String refreshToken)? onRefreshToken;
-  Future<Iterable<ErrorMessageConfig>> Function()? onRemoteErrorMessages;
-
-  void config(
-      {Future<AuthTokenResponse?> Function(String refreshToken)? onRefreshToken,
-      Future<Iterable<ErrorMessageConfig>> Function()? onRemoteErrorMessages}) {
-    this.onRefreshToken = onRefreshToken;
-    this.onRemoteErrorMessages = onRemoteErrorMessages;
-  }
-}
 
 class VNMDio {
   final String baseUrl;
@@ -193,10 +176,9 @@ extension DioEx on Dio {
       } else {
         if (allowRefreshToken == true) {
           AuthTokenResponse? authToken;
-          if (VNMDioConfig().onRefreshToken != null)
-            authToken = await VNMDioConfig()
-                .onRefreshToken!(Auth().refreshToken)
-                .onError((error, stackTrace) => null);
+          authToken = await VNMBus()
+              .fire("auth.refreshToken", Auth().refreshToken)
+              .onError((error, stackTrace) => null);
           if (authToken == null) {
             await Auth().foreLogout();
           } else {
@@ -234,8 +216,7 @@ extension DioEx on Dio {
   Future<ErrorMessageConfig?> remoteErrorHandler(Response response) async {
     String? errorCode = getErrorCode(response);
     Iterable<ErrorMessageConfig> errors = [];
-    if (VNMDioConfig().onRemoteErrorMessages != null)
-      errors = await VNMDioConfig().onRemoteErrorMessages!();
+    errors = await VNMBus().fire("firebase.errorMessages");
     var errorMsg = errors.firstWhereOrNull((it) => it.code == errorCode);
     return errorMsg;
   }

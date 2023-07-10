@@ -4,7 +4,7 @@ import 'package:app_settings/app_settings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 
-import '../../material/widgets/alert.dart';
+import '../../material/widget/basic/alert.dart';
 import 'loader.dart';
 import 'localization.dart';
 import 'logger.dart';

@@ -1,6 +1,6 @@
 import 'package:jwt_decoder/jwt_decoder.dart';
 
-import '../exception/exception.dart';
+import '../../material/exception/exception.dart';
 
 class JwtUtil {
   static JwtUtil _i = JwtUtil._();

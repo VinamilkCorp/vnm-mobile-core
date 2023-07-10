@@ -5,7 +5,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
 
-import '../exception/exception.dart';
+import '../../material/exception/exception.dart';
 import '../global/logger.dart';
 import '../storage/storage.dart';
 

@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter_keychain/flutter_keychain.dart';
 
-import '../exception/exception.dart';
+import '../../material/exception/exception.dart';
 import '../global/logger.dart';
 
 class Encrypt {

@@ -5,9 +5,10 @@ import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../exception/exception.dart';
+import '../../auth/model/auth_token.dart';
+import '../../material/exception/exception.dart';
+import '../global/bus.dart';
 import '../global/logger.dart';
-import '../../feature/auth/model/auth_token.dart';
 import 'encrypt.dart';
 
 class _StorageKey {
@@ -32,7 +33,8 @@ class Storage {
 
   final _UserStorage _user = _UserStorage();
 
-  Future<void> initialize(String databaseName) async {
+  Future<void> initialize() async {
+    var databaseName = VNMBus().touch("database");
     await Encrypt().initialize(databaseName);
     await _secure.init();
     await _user.init();

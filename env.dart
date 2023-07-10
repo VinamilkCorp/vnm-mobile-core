@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
-import '../feature/auth/model/user.dart';
-import '../feature/auth/model/verify_flow_type.dart';
+import '../auth/model/user.dart';
+import '../auth/model/verify_flow_type.dart';
 
 class Env {
   String get name => _env;

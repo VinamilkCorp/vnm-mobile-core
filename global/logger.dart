@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
-import '../../core/env.dart';
+import '../env.dart';
 
 class VNMLogger {
   String? name;

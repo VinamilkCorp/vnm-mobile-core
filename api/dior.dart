@@ -205,12 +205,7 @@ extension DioEx on Dio {
       var code =
           ExceptionCode.values.firstWhereOrNull((it) => it.name == errorCode);
       throw code?.exception ??
-          UnknownMessageException(
-              detail: jsonEncode({
-            "status": response.statusCode,
-            "message": response.statusMessage,
-            "code": errorCode
-          }));
+          UnknownMessageException(detail: response.statusMessage);
     } else {
       throw RemoteErrorMessageException(errorMsg);
     }

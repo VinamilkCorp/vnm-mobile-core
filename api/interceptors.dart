@@ -6,7 +6,6 @@ import 'package:dio/dio.dart';
 import '../../auth/auth.dart';
 import '../../material/exception/index.dart';
 import '../global/logger.dart';
-import '../storage/storage.dart';
 
 typedef APIHeaderCreator = Map<String, Future<String> Function()>;
 
@@ -58,8 +57,14 @@ class APIInterceptor implements Interceptor {
     } catch (exception, stackTrace) {
       VNMException().capture(exception, stackTrace);
     } finally {
-      options.headers['x-signature'] = await createApiSignature(requestPath,
-          timestamp, options.headers["x-device-info"], options.data ?? "");
+      options.headers['x-signature'] = await createApiSignature(
+        url: requestPath,
+        timestamp: timestamp,
+        deviceInfo: options.headers["x-device-info"],
+        requestBody: options.data ?? "",
+        signatureSalt: options.headers["signature"],
+      );
+      options.headers.remove("signature");
       handler.next(options);
     }
   }
@@ -120,8 +125,13 @@ class APIInterceptor implements Interceptor {
     handler.next(err);
   }
 
-  Future<String> createApiSignature(String url, String timestamp,
-      String deviceInfo, dynamic requestBody) async {
+  Future<String> createApiSignature({
+    required String url,
+    required String timestamp,
+    required String deviceInfo,
+    required dynamic requestBody,
+    required String? signatureSalt,
+  }) async {
     List<String> toHash = [url, timestamp, deviceInfo];
 
     if (requestBody != null) {
@@ -131,8 +141,6 @@ class APIInterceptor implements Interceptor {
         toHash.add(jsonEncode(requestBody));
       }
     }
-
-    var signatureSalt = await Storage().getSignatureSalt();
     if (signatureSalt != null) {
       toHash.add(signatureSalt);
     }

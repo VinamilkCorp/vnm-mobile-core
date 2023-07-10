@@ -15,7 +15,7 @@ class Device {
   Device._() {
     _deviceInfoSink
         .distinct()
-        .debounceTime(Duration(milliseconds: 2000))
+        .debounceTime(Duration(milliseconds: 5000))
         .switchMap(_fetchInfo)
         .startWith('')
         .listen((event) {});

@@ -11,9 +11,12 @@ abstract class BaseAPI {
 
   Future<String> get initDeviceInfo;
 
+  Future<String> get initSignature;
+
   VNMDio get dior =>
       VNMDio(baseUrl: baseUrl, contextPath: contextPath, headers: {
         "client-id": () => initClientId,
+        "signature": () => initSignature,
         "x-device-info": () => initDeviceInfo,
       });
 }

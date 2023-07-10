@@ -72,6 +72,11 @@ class Storage {
 
   Future<void> setClientId(String value) => _secure.setClientId(value);
 
+  Future<String?> getSignatureSalt() => _secure.getSignatureSalt();
+
+  Future<void> setSignatureSalt(String value) =>
+      _secure.setSignatureSalt(value);
+
   Future<String?> getDeviceId() => _secure.getDeviceId();
 
   Future<void> setDeviceId(String value) => _secure.setDeviceId(value);
@@ -79,11 +84,6 @@ class Storage {
   Future<AuthTokenResponse?> getToken() => _secure.getToken();
 
   Future<void> setToken(AuthTokenResponse value) => _secure.setToken(value);
-
-  Future<String?> getSignatureSalt() => _secure.getSignatureSalt();
-
-  Future<void> setSignatureSalt(String value) =>
-      _secure.setSignatureSalt(value);
 
   Future<String?> getDeviceInfo() => _secure.getDeviceInfo();
 

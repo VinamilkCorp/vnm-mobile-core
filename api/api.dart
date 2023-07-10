@@ -14,9 +14,21 @@ abstract class VNMAPI extends BaseAPI {
     if (clientId == null) {
       clientId = await VNMBus().fire("firebase.clientId");
     } else {
-      VNMBus().fire("firebase.clientId");
+      VNMBus().fire("firebase.fetchClientId");
     }
     return clientId ?? "";
+  }
+
+  @override
+  // TODO: implement initSignature
+  Future<String> get initSignature async {
+    var signatureSalt = await Storage().getSignatureSalt();
+    if (signatureSalt == null) {
+      signatureSalt = await VNMBus().fire("firebase.signatureSalt");
+    } else {
+      VNMBus().fire("firebase.fetchSignatureSalt");
+    }
+    return signatureSalt ?? "";
   }
 
   @override

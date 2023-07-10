@@ -8,10 +8,10 @@ import 'package:flutter/foundation.dart';
 
 import '../../auth/auth.dart';
 import '../../auth/model/auth_token.dart';
-import '../base/api.dart';
 import '../../extension/if_null.dart';
 import '../../material/exception/dio_exception.dart';
 import '../../material/exception/index.dart';
+import '../base/api.dart';
 import '../env.dart';
 import '../global/bus.dart';
 import '../global/logger.dart';
@@ -79,15 +79,15 @@ class VNMDio {
     }
     var func = () => _dio.get(url, queryParameters: parameters);
     // await Future.delayed(Duration(milliseconds: 2000));
-    var result = await _dio.catcher(func);
-    if (result?.data != null) {
-      try {
+    try {
+      var result = await _dio.catcher(func);
+      if (result?.data != null) {
         T data = parser(result?.data!);
         yield data;
         Storage().setObjectByRequest(url, data.toJson(), parameters);
-      } catch (exception, stackTrace) {
-        VNMLogger().error(exception, stackTrace);
       }
+    } catch (exception, stackTrace) {
+      VNMException().capture(exception, stackTrace);
     }
   }
 
@@ -155,7 +155,10 @@ extension DioEx on Dio {
     } else if (status == HttpStatus.internalServerError) {
       throw UnknownMessageException(detail: response.statusMessage);
     } else {
-      throw this;
+      if (response.data is Map && response.data["message"] is String) {
+        throw UnknownMessageException(detail: response.data["message"]);
+      }
+      throw response;
     }
   }
 

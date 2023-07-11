@@ -49,7 +49,7 @@ class VNMLocation {
                     .locale
                     .please_provide_your_permission_location)
             .show();
-        AppSettings.openLocationSettings();
+        AppSettings.openAppSettings(type: AppSettingsType.location);
         await Future.delayed(const Duration(seconds: 3));
         await Alert.goOn(
                 message: Localization()

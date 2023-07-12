@@ -80,6 +80,7 @@ class VNMDio {
     var func = () => _dio.get(url, queryParameters: parameters);
     // await Future.delayed(Duration(milliseconds: 2000));
     try {
+      if (VNMBus().touch("readyForAuth") == false) return;
       var result = await _dio.catcher(func);
       if (result?.data != null) {
         T data = parser(result?.data!);

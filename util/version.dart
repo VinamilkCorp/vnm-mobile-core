@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:open_store/open_store.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../firebase/firebase.dart';
 import '../../material/exception/exception.dart';
@@ -56,9 +59,7 @@ class Version {
         return Alert.agreeOrClose(
             title: title,
             message: content,
-            onAgree: () => OpenStore.instance.open(
-                appStoreId: VNMBus().touch<String>("appStoreId"),
-                androidAppBundleId: packageInfo.packageName)).show();
+            onAgree: () async => navigateStore(packageInfo.packageName)).show();
       } catch (exception, stackTrace) {
         throw exception;
       }
@@ -68,5 +69,33 @@ class Version {
     List versionCells = version.split('.');
     versionCells = versionCells.map((i) => int.parse(i)).toList();
     return versionCells[0] * 100000 + versionCells[1] * 1000 + versionCells[2];
+  }
+
+  void navigateStore(String packageName) async {
+    try {
+      OpenStore.instance
+          .open(
+              appStoreId: VNMBus().touch<String>("appStoreId"),
+              androidAppBundleId: packageName)
+          .catchError((_) async {
+        try {
+          Uri? uri;
+          if (Platform.isAndroid) {
+            uri = Uri.parse(
+                "https://play.google.com/store/apps/details?id=" + packageName);
+          } else if (Platform.isIOS) {
+            uri = Uri.parse(
+                "https://apps.apple.com/us/app/vinamilk-b2b/${VNMBus().touch<String>("appStoreId")}");
+          }
+          if (uri != null) if (!await launchUrl(uri)) {
+            throw Exception('Could not launch $uri');
+          }
+        } catch (exception, stackTrace) {
+          throw exception;
+        }
+      });
+    } catch (exception, stackTrace) {
+      throw exception;
+    }
   }
 }

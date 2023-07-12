@@ -28,9 +28,16 @@ class AccountTest {
     }
   }
 
+  bool isValid(String phoneNumber) {
+    var verifyFlowType = AccountTest().getVerifyFlowType(phoneNumber);
+    var userRole = AccountTest().getUserRole(phoneNumber);
+    return verifyFlowType != null && userRole != null;
+  }
+
   UserRole? getUserRole(String phoneNumber) {
     var tag = VNMBus().touch("tag");
-    var first = data.firstWhereOrNull((it) => it["tag"] == tag);
+    var first = data.firstWhereOrNull(
+        (it) => it["tag"] == tag && it["phone"] == phoneNumber);
     if (first != null) {
       return UserRole.values.firstWhereOrNull((it) => it.name == first["role"]);
     }
@@ -39,7 +46,8 @@ class AccountTest {
 
   VerifyFlowType? getVerifyFlowType(String phoneNumber) {
     var tag = VNMBus().touch("tag");
-    var first = data.firstWhereOrNull((it) => it["tag"] == tag);
+    var first = data.firstWhereOrNull(
+        (it) => it["tag"] == tag && it["phone"] == phoneNumber);
     if (first != null) {
       return VerifyFlowType.values
           .firstWhereOrNull((it) => it.name == first["verifyFlowType"]);
